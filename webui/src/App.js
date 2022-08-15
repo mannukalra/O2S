@@ -1,6 +1,7 @@
 import './App.css';
 import { useEffect, useState } from 'react';
 import Env from './comps/Env';
+import MiniDrawer from './comps/MiniDrawer';
 
 function getEnvs(envs){
   return envs.map( (env, index) =>{
@@ -14,7 +15,7 @@ function App() {
   const [envs, setEnvs] = useState([]);
 
   useEffect(() => {
-    fetch('http://localhost:8080/envs/all')
+    fetch('http://localhost:8080/o2s/envs')
       .then(response => response.json())
       .then(data => {
         setEnvs(data);
@@ -25,10 +26,10 @@ function App() {
 
   return (
     <div className="App">
-      <header className="App-header">
+      {/* <header className="App-header">
         {getEnvs(envs)}
-      </header>
-      
+      </header> */}
+      <MiniDrawer envs={envs}/>
     </div>
   );
 }

@@ -14,8 +14,8 @@ public class EnvironmentSvc {
     @Autowired
     EnvironmentRepository envRepo;
 
-    public Environment addEnv(String name, String desc){
-        var env = new Environment(name, desc);
+    public Environment addEnv(String name, String desc, Environment.Type type){
+        var env = new Environment(name, desc, type);
         envRepo.save(env);
         return env;
     }

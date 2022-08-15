@@ -7,21 +7,32 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 
+
+
 @Entity
 @Table(name="Environment")
 public class Environment {
+
+	public static enum Type{
+		PROD,
+		DEV
+	}
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 	private String name;
+	private Type type;
 	private String description;
 
 	public Environment(){}
 
-	public Environment(String name, String description) {
+	public Environment(String name, String description, Type type) {
 		this.name = name;
 		this.description = description;
+		if(type == null)
+			type = Type.DEV;
+		this.type = type;
 	}
 
 	public Integer getId() {
@@ -48,6 +59,13 @@ public class Environment {
 		this.description = description;
 	}
 
+	public Type getType() {
+		return type;
+	}
+
+	public void setType(Type type) {
+		this.type = type;
+	}	
 
 }
 
