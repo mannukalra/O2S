@@ -11,20 +11,20 @@ import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import HiveIcon from '@mui/icons-material/Hive';
 import SettingsIcon from '@mui/icons-material/Settings';
-import { Tooltip } from '@mui/material';
+import { Button, Tooltip } from '@mui/material';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import Collapse from '@mui/material/Collapse';
 import LabelImportantIcon from '@mui/icons-material/LabelImportant';
 import LogoDevIcon from '@mui/icons-material/LogoDev';
-
+import Logo from '../img/o2s-logo.png';
+import Overview from './Overview';
 
 const drawerWidth = 240;
 const envsTxt = "Environments";
@@ -69,8 +69,7 @@ const AppBar = styled(MuiAppBar, {
         duration: theme.transitions.duration.leavingScreen,
     }),
     ...(open && {
-        marginLeft: drawerWidth,
-        width: `calc(100% - ${drawerWidth}px)`,
+        // marginLeft: drawerWidth, width: `calc(100% - ${drawerWidth}px)`,
         transition: theme.transitions.create(['width', 'margin'], {
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.enteringScreen,
@@ -98,17 +97,19 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 
 function envsList(envs){
     return envs.map((env, index) => (
-        <ListItemButton key={env.id} sx={{ pl: 4, marginLeft: "24px" }}>
-            <ListItemIcon>
-                {env.type?.includes("PROD") ? <LabelImportantIcon /> : <LogoDevIcon />}
-            </ListItemIcon>
-            <ListItemText primary={env.name?.length > 12 ? env.name.substring(0, 12) + "..." : env.name } />
-        </ListItemButton>
+        <Tooltip title={env.type +" Environment "+ env.name} placement="right-start">
+            <ListItemButton key={env.id} sx={{ pl: 4, marginLeft: "24px" }}>
+                <ListItemIcon>
+                    {env.type?.includes("PROD") ? <LabelImportantIcon /> : <LogoDevIcon />}
+                </ListItemIcon>
+                <ListItemText primary={env.name?.length > 12 ? env.name.substring(0, 12) + "..." : env.name } />
+            </ListItemButton>
+        </Tooltip>
     ));
 }
 
 export default function MiniDrawer(props) {
-    const theme = useTheme();
+    // const theme = useTheme();
     const [open, setOpen] = React.useState(false);
     const [envOpen, setEnvOpen] = React.useState(false);
 
@@ -129,48 +130,39 @@ export default function MiniDrawer(props) {
     return (
         <Box sx={{ display: 'flex' }}>
             <CssBaseline />
-            <AppBar position="fixed" open={open}>
+            <AppBar position="fixed" open={open} sx={{ background: '#002F6C' }}>
                 <Toolbar>
                     <IconButton
                         color="inherit"
                         aria-label="open drawer"
                         onClick={handleDrawerOpen}
                         edge="start"
-                        sx={{
-                            marginRight: 5,
-                            ...(open && { display: 'none' }),
-                        }}
+                        sx={{ marginRight: 1.6, ...(open && { display: 'none' }) }}
                     >
                         <MenuIcon />
                     </IconButton>
-                    <Typography variant="h6" noWrap component="div">
+                    <IconButton
+                        color="inherit"
+                        aria-label="close drawer"
+                        onClick={handleDrawerClose}
+                        edge="start"
+                        sx={{ marginRight: 1.6, ...(!open && { display: 'none' }) }}
+                    >
+                        <ChevronLeftIcon />
+                    </IconButton>
+                    <Box component="img" sx={{ height: 56 }} alt="O2S logo" src={Logo} />
+                    {/* <Typography variant="h6" noWrap component="div">
                         O2S
-                    </Typography>
+                    </Typography> */}
                 </Toolbar>
             </AppBar>
             <Drawer variant="permanent" open={open}>
-                <DrawerHeader>
-                    <IconButton onClick={handleDrawerClose}>
-                        {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
-                    </IconButton>
-                </DrawerHeader>
+                <DrawerHeader />
                 <Divider />
                 <List>
                     <ListItem key={envsTxt} disablePadding sx={{ display: 'block' }}>
-                        <ListItemButton
-                            sx={{
-                                minHeight: 48,
-                                justifyContent: open ? 'initial' : 'center',
-                                px: 2.5,
-                            }}
-                        >
-                            <ListItemIcon
-                                sx={{
-                                    minWidth: 0,
-                                    mr: open ? 3 : 'auto',
-                                    justifyContent: 'center',
-                                }}
-                            >
+                        <ListItemButton sx={{ minHeight: 48, justifyContent: open ? 'initial' : 'center', px: 2.5 }} >
+                            <ListItemIcon sx={{ minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center' }} >
                                 <Tooltip title={envsTxt} placement="right-start">
                                     <IconButton>
                                         <HiveIcon />
@@ -182,26 +174,14 @@ export default function MiniDrawer(props) {
                         </ListItemButton>
                         <Collapse in={envOpen} timeout="auto" unmountOnExit>
                             <List component="div" disablePadding >
-                                {envsList(props.envs.sort((a, b) => (a.type > b.type) ? -1 : 1 ))}
+                                {envsList(props.envs.sort((a, b) => (a.type > b.type) ? -1 : (a.type < b.type) ? 1 : (a.name > b.name) ? 1 : -1 ))}
                             </List>
                         </Collapse>
                     </ListItem>
                     <Divider />
                     <ListItem key={settingsTxt} disablePadding sx={{ display: 'block' }}>
-                        <ListItemButton
-                            sx={{
-                                minHeight: 48,
-                                justifyContent: open ? 'initial' : 'center',
-                                px: 2.5,
-                            }}
-                        >
-                            <ListItemIcon
-                                sx={{
-                                    minWidth: 0,
-                                    mr: open ? 3 : 'auto',
-                                    justifyContent: 'center',
-                                }}
-                            >
+                        <ListItemButton sx={{ minHeight: 48, justifyContent: open ? 'initial' : 'center', px: 2.5 }} >
+                            <ListItemIcon sx={{ minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center' }} >
                                 <Tooltip title={settingsTxt} placement="right-start">
                                     <IconButton>
                                         <SettingsIcon />
@@ -215,9 +195,8 @@ export default function MiniDrawer(props) {
             </Drawer>
             <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
                 <DrawerHeader />
-                <Typography paragraph>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod sapien faucibus et molestie ac.
-                </Typography>
+                <Button variant="outlined" >Add Environment</Button> 
+                <Overview />
             </Box>
         </Box>
     );

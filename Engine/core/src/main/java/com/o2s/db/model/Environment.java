@@ -15,7 +15,8 @@ public class Environment {
 
 	public static enum Type{
 		PROD,
-		DEV
+		DEV,
+		OTHER
 	}
 	
 	@Id
