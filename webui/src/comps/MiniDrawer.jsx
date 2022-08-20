@@ -21,14 +21,18 @@ import { Button, Tooltip } from '@mui/material';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import Collapse from '@mui/material/Collapse';
-import LabelImportantIcon from '@mui/icons-material/LabelImportant';
+import MonitorHeartIcon from '@mui/icons-material/MonitorHeart';
+import IntegrationInstructionsIcon from '@mui/icons-material/IntegrationInstructions';
 import LogoDevIcon from '@mui/icons-material/LogoDev';
+import LabelImportantIcon from '@mui/icons-material/LabelImportant';
 import Logo from '../img/o2s-logo.png';
-import Overview from './Overview';
+import AddEnv from './AddEnv';
 
 const drawerWidth = 240;
 const envsTxt = "Environments";
 const settingsTxt = "Settings";
+const evnTypeIcons = {"PROD": <MonitorHeartIcon />, "QA": <IntegrationInstructionsIcon />, "DEV": <LogoDevIcon />, "OTHER": <LabelImportantIcon />};
+const typeSortOrder = {"PROD": 1, "QA": 2, "DEV": 3, "OTHER": 4};
 
 const openedMixin = (theme) => ({
     width: drawerWidth,
@@ -97,10 +101,10 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 
 function envsList(envs){
     return envs.map((env, index) => (
-        <Tooltip title={env.type +" Environment "+ env.name} placement="right-start">
-            <ListItemButton key={env.id} sx={{ pl: 4, marginLeft: "24px" }}>
+        <Tooltip key={env.id} title={env.type +" Environment "+ env.name} placement="right-start">
+            <ListItemButton sx={{ pl: 4, marginLeft: "24px" }}>
                 <ListItemIcon>
-                    {env.type?.includes("PROD") ? <LabelImportantIcon /> : <LogoDevIcon />}
+                    {evnTypeIcons[env?.type]}
                 </ListItemIcon>
                 <ListItemText primary={env.name?.length > 12 ? env.name.substring(0, 12) + "..." : env.name } />
             </ListItemButton>
@@ -112,6 +116,7 @@ export default function MiniDrawer(props) {
     // const theme = useTheme();
     const [open, setOpen] = React.useState(false);
     const [envOpen, setEnvOpen] = React.useState(false);
+    const [addEnvOpen, setAddEnvOpen] = React.useState(false);
 
     const handleDrawerOpen = () => {
         setOpen(true);
@@ -125,6 +130,14 @@ export default function MiniDrawer(props) {
 
     const handleEnvDDClick = () => {
         setEnvOpen(!envOpen);
+    };
+
+    const handleOpenAddEnv = () => {
+        setAddEnvOpen(true);
+    };
+    
+    const handleCloseAddEnv = () => {
+        setAddEnvOpen(false);
     };
 
     return (
@@ -174,7 +187,7 @@ export default function MiniDrawer(props) {
                         </ListItemButton>
                         <Collapse in={envOpen} timeout="auto" unmountOnExit>
                             <List component="div" disablePadding >
-                                {envsList(props.envs.sort((a, b) => (a.type > b.type) ? -1 : (a.type < b.type) ? 1 : (a.name > b.name) ? 1 : -1 ))}
+                                {envsList(props.envs.sort((a, b) => (typeSortOrder[a.type] < typeSortOrder[b.type]) ? -1 : (typeSortOrder[a.type] > typeSortOrder[b.type]) ? 1 : (a.name > b.name) ? 1 : -1 ))}
                             </List>
                         </Collapse>
                     </ListItem>
@@ -195,8 +208,9 @@ export default function MiniDrawer(props) {
             </Drawer>
             <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
                 <DrawerHeader />
-                <Button variant="outlined" >Add Environment</Button> 
-                <Overview />
+                <DrawerHeader />
+                <Button variant="outlined" onClick={handleOpenAddEnv}>Add Environment</Button> 
+                <AddEnv open={addEnvOpen} handleClose={handleCloseAddEnv}/>
             </Box>
         </Box>
     );

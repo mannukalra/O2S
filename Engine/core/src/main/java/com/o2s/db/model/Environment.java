@@ -7,14 +7,13 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 
-
-
 @Entity
 @Table(name="Environment")
 public class Environment {
 
 	public static enum Type{
 		PROD,
+		QA,
 		DEV,
 		OTHER
 	}
@@ -25,6 +24,8 @@ public class Environment {
 	private String name;
 	private Type type;
 	private String description;
+	private String country;
+	private String city;
 
 	public Environment(){}
 
@@ -66,7 +67,24 @@ public class Environment {
 
 	public void setType(Type type) {
 		this.type = type;
+	}
+
+	public String getCountry() {
+		return country;
+	}
+
+	public void setCountry(String country) {
+		this.country = country;
+	}
+
+	public String getCity() {
+		return city;
+	}
+
+	public void setCity(String city) {
+		this.city = city;
 	}	
 
+	
 }
 
