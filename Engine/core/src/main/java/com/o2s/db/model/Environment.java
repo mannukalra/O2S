@@ -17,6 +17,13 @@ public class Environment {
 		DEV,
 		OTHER
 	}
+
+	public static enum Status{
+		HEALTHY,
+		INFO,
+		WARNING,
+		ERROR
+	}
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,7 +32,9 @@ public class Environment {
 	private Type type;
 	private String description;
 	private String country;
+	private String state;
 	private String city;
+	private Status status;
 
 	public Environment(){}
 
@@ -33,8 +42,19 @@ public class Environment {
 		this.name = name;
 		this.description = description;
 		if(type == null)
-			type = Type.DEV;
+			type = Type.OTHER;
 		this.type = type;
+	}
+
+	public Environment(String name, String description, Type type, String country, String state, String city) {
+		this.name = name;
+		this.description = description;
+		if(type == null)
+			type = Type.OTHER;
+		this.type = type;
+		this.country = country;
+		this.state = state;
+		this.city = city;
 	}
 
 	public Integer getId() {
@@ -77,14 +97,31 @@ public class Environment {
 		this.country = country;
 	}
 
+	public String getState() {
+		return state;
+	}
+
+	public void setState(String state) {
+		this.state = state;
+	}
+
 	public String getCity() {
 		return city;
 	}
 
 	public void setCity(String city) {
 		this.city = city;
+	}
+
+	public Status getStatus() {
+		return status;
+	}
+
+	public void setStatus(Status status) {
+		this.status = status;
 	}	
 
+	
 	
 }
 

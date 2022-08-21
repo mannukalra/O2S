@@ -17,7 +17,7 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import HiveIcon from '@mui/icons-material/Hive';
 import SettingsIcon from '@mui/icons-material/Settings';
-import { Button, Tooltip } from '@mui/material';
+import { Alert, Button, Grid, Tooltip } from '@mui/material';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import Collapse from '@mui/material/Collapse';
@@ -27,11 +27,13 @@ import LogoDevIcon from '@mui/icons-material/LogoDev';
 import LabelImportantIcon from '@mui/icons-material/LabelImportant';
 import Logo from '../img/o2s-logo.png';
 import AddEnv from './AddEnv';
+import EnvCard from './EnvCard';
 
 const drawerWidth = 240;
 const envsTxt = "Environments";
 const settingsTxt = "Settings";
-const evnTypeIcons = {"PROD": <MonitorHeartIcon />, "QA": <IntegrationInstructionsIcon />, "DEV": <LogoDevIcon />, "OTHER": <LabelImportantIcon />};
+const evnTypeIcons = {PROD: <MonitorHeartIcon />, QA: <IntegrationInstructionsIcon />, DEV: <LogoDevIcon />, OTHER: <LabelImportantIcon />};
+const evnStatusColors = {HEALTHY: "#4caf50", INFO: "#03a9f4", WARNING: "#ff9800", ERROR: "#ef5350"}; 
 const typeSortOrder = {"PROD": 1, "QA": 2, "DEV": 3, "OTHER": 4};
 
 const openedMixin = (theme) => ({
@@ -102,8 +104,8 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 function envsList(envs){
     return envs.map((env, index) => (
         <Tooltip key={env.id} title={env.type +" Environment "+ env.name} placement="right-start">
-            <ListItemButton sx={{ pl: 4, marginLeft: "24px" }}>
-                <ListItemIcon>
+            <ListItemButton sx={{ pl: 4, ml: "18px" }}>
+                <ListItemIcon sx={{ mr: "-7px", color: env.status ? evnStatusColors[env.status] : null }}>
                     {evnTypeIcons[env?.type]}
                 </ListItemIcon>
                 <ListItemText primary={env.name?.length > 12 ? env.name.substring(0, 12) + "..." : env.name } />
@@ -115,6 +117,7 @@ function envsList(envs){
 export default function MiniDrawer(props) {
     // const theme = useTheme();
     const [open, setOpen] = React.useState(false);
+    const [alert, setAlert] = React.useState({open: false, severity: "", message: ""});
     const [envOpen, setEnvOpen] = React.useState(false);
     const [addEnvOpen, setAddEnvOpen] = React.useState(false);
 
@@ -139,6 +142,14 @@ export default function MiniDrawer(props) {
     const handleCloseAddEnv = () => {
         setAddEnvOpen(false);
     };
+
+    const openAlert = (severity, message)=>{
+        setAlert({ ...alert, open: true, severity: severity, message: message });
+    }
+
+    const closeAlert = ()=>{
+        setAlert({ ...alert, open: false, severity: "", message: "" });
+    }
 
     return (
         <Box sx={{ display: 'flex' }}>
@@ -175,7 +186,7 @@ export default function MiniDrawer(props) {
                 <List>
                     <ListItem key={envsTxt} disablePadding sx={{ display: 'block' }}>
                         <ListItemButton sx={{ minHeight: 48, justifyContent: open ? 'initial' : 'center', px: 2.5 }} >
-                            <ListItemIcon sx={{ minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center' }} >
+                            <ListItemIcon sx={{ minWidth: 0, mr: open ? 2 : 'auto', justifyContent: 'center' }} >
                                 <Tooltip title={envsTxt} placement="right-start">
                                     <IconButton>
                                         <HiveIcon />
@@ -194,7 +205,7 @@ export default function MiniDrawer(props) {
                     <Divider />
                     <ListItem key={settingsTxt} disablePadding sx={{ display: 'block' }}>
                         <ListItemButton sx={{ minHeight: 48, justifyContent: open ? 'initial' : 'center', px: 2.5 }} >
-                            <ListItemIcon sx={{ minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center' }} >
+                            <ListItemIcon sx={{ minWidth: 0, mr: open ? 2 : 'auto', justifyContent: 'center' }} >
                                 <Tooltip title={settingsTxt} placement="right-start">
                                     <IconButton>
                                         <SettingsIcon />
@@ -208,9 +219,28 @@ export default function MiniDrawer(props) {
             </Drawer>
             <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
                 <DrawerHeader />
+                <div>
+                    {alert.open && <Alert severity={alert.severity} onClose={() => {closeAlert()}}>{alert.message}</Alert>}
+                </div>
+                <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
+                    <Grid xs={3}>
+                        <EnvCard />
+                    </Grid>
+                    <Grid xs={3}>
+                        <EnvCard />
+                    </Grid>
+                    <Grid xs={3}>
+                        <EnvCard />
+                    </Grid>
+                </Grid>
                 <DrawerHeader />
                 <Button variant="outlined" onClick={handleOpenAddEnv}>Add Environment</Button> 
-                <AddEnv open={addEnvOpen} handleClose={handleCloseAddEnv}/>
+                <AddEnv 
+                    label="Add Environment"
+                    env={{name:"", type:"", country:"", state:"", city:""}}
+                    open={addEnvOpen}
+                    openAlert={openAlert}
+                    handleClose={handleCloseAddEnv}/>
             </Box>
         </Box>
     );
