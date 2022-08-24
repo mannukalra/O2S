@@ -101,7 +101,7 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 );
 
 
-function envsList(envs){
+function envList(envs){
     return envs.map((env, index) => (
         <Tooltip key={env.id} title={env.type +" Environment "+ env.name} placement="right-start">
             <ListItemButton sx={{ pl: 4, ml: "18px" }}>
@@ -111,6 +111,14 @@ function envsList(envs){
                 <ListItemText primary={env.name?.length > 12 ? env.name.substring(0, 12) + "..." : env.name } />
             </ListItemButton>
         </Tooltip>
+    ));
+}
+
+function envCards(envs){
+    return envs.map((env, index) => (
+        <Grid key={index} item xs={3}>
+            <EnvCard env={env} />
+        </Grid>
     ));
 }
 
@@ -198,7 +206,7 @@ export default function MiniDrawer(props) {
                         </ListItemButton>
                         <Collapse in={envOpen} timeout="auto" unmountOnExit>
                             <List component="div" disablePadding >
-                                {envsList(props.envs.sort((a, b) => (typeSortOrder[a.type] < typeSortOrder[b.type]) ? -1 : (typeSortOrder[a.type] > typeSortOrder[b.type]) ? 1 : (a.name > b.name) ? 1 : -1 ))}
+                                {envList(props.envs.sort((a, b) => (typeSortOrder[a.type] < typeSortOrder[b.type]) ? -1 : (typeSortOrder[a.type] > typeSortOrder[b.type]) ? 1 : (a.name > b.name) ? 1 : -1 ))}
                             </List>
                         </Collapse>
                     </ListItem>
@@ -222,16 +230,8 @@ export default function MiniDrawer(props) {
                 <div>
                     {alert.open && <Alert severity={alert.severity} onClose={() => {closeAlert()}}>{alert.message}</Alert>}
                 </div>
-                <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
-                    <Grid xs={3}>
-                        <EnvCard />
-                    </Grid>
-                    <Grid xs={3}>
-                        <EnvCard />
-                    </Grid>
-                    <Grid xs={3}>
-                        <EnvCard />
-                    </Grid>
+                <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }} >
+                    {envCards(props.envs)}
                 </Grid>
                 <DrawerHeader />
                 <Button variant="outlined" onClick={handleOpenAddEnv}>Add Environment</Button> 

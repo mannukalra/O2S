@@ -25,7 +25,7 @@ const ExpandMore = styled((props) => {
     }),
   }));
   
- function EnvCard() {
+ function EnvCard(props) {
     const [expanded, setExpanded] = React.useState(false);
   
     const handleExpandClick = () => {
@@ -33,7 +33,7 @@ const ExpandMore = styled((props) => {
     };
   
     return (
-      <Card sx={{ maxWidth: 345 }}>
+      <Card sx={{ maxWidth: 432, margin: "7px" }}>
         <CardHeader
           avatar={
             <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
@@ -45,12 +45,12 @@ const ExpandMore = styled((props) => {
               <MoreVertIcon />
             </IconButton>
           }
-          title="Env name!!"
-          subheader="status of env"
+          title={props.env.name}
+          subheader={props.env.status}
         />
         <CardContent>
           <Typography variant="body2" color="text.secondary">
-            Env info
+            "Chart Placeholder!!"
           </Typography>
         </CardContent>
         <CardActions disableSpacing>
@@ -65,9 +65,8 @@ const ExpandMore = styled((props) => {
         </CardActions>
         <Collapse in={expanded} timeout="auto" unmountOnExit>
           <CardContent>
-            <Typography paragraph>Method:</Typography>
             <Typography paragraph>
-              More Details of env!!!
+              {props.env.description}
             </Typography>
           </CardContent>
         </Collapse>
