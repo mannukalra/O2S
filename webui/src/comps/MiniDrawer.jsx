@@ -27,9 +27,10 @@ import LogoDevIcon from '@mui/icons-material/LogoDev';
 import LabelImportantIcon from '@mui/icons-material/LabelImportant';
 import Logo from '../img/o2s-logo.png';
 import AddEnv from './AddEnv';
-import EnvCard from './EnvCard';
+import Envs from './envs/Envs';
+import Devices from './devices/Devices';
 
-const drawerWidth = 240;
+const drawerWidth = 280;
 const envsTxt = "Environments";
 const settingsTxt = "Settings";
 const evnTypeIcons = {PROD: <MonitorHeartIcon />, QA: <IntegrationInstructionsIcon />, DEV: <LogoDevIcon />, OTHER: <LabelImportantIcon />};
@@ -108,17 +109,9 @@ function envList(envs){
                 <ListItemIcon sx={{ mr: "-7px", color: env.status ? evnStatusColors[env.status] : null }}>
                     {evnTypeIcons[env?.type]}
                 </ListItemIcon>
-                <ListItemText primary={env.name?.length > 12 ? env.name.substring(0, 12) + "..." : env.name } />
+                <ListItemText primary={env.name?.length > 18 ? env.name.substring(0, 18) + "..." : env.name } />
             </ListItemButton>
         </Tooltip>
-    ));
-}
-
-function envCards(envs){
-    return envs.map((env, index) => (
-        <Grid key={index} item xs={3}>
-            <EnvCard env={env} />
-        </Grid>
     ));
 }
 
@@ -128,6 +121,7 @@ export default function MiniDrawer(props) {
     const [alert, setAlert] = React.useState({open: false, severity: "", message: ""});
     const [envOpen, setEnvOpen] = React.useState(false);
     const [addEnvOpen, setAddEnvOpen] = React.useState(false);
+    const [selectedEnv, setSelectedEnv] = React.useState(null);
 
     const handleDrawerOpen = () => {
         setOpen(true);
@@ -158,6 +152,10 @@ export default function MiniDrawer(props) {
     const closeAlert = ()=>{
         setAlert({ ...alert, open: false, severity: "", message: "" });
     }
+
+    const selectEnv = (env) => {
+        setSelectedEnv(env);
+    };
 
     return (
         <Box sx={{ display: 'flex' }}>
@@ -206,7 +204,7 @@ export default function MiniDrawer(props) {
                         </ListItemButton>
                         <Collapse in={envOpen} timeout="auto" unmountOnExit>
                             <List component="div" disablePadding >
-                                {envList(props.envs.sort((a, b) => (typeSortOrder[a.type] < typeSortOrder[b.type]) ? -1 : (typeSortOrder[a.type] > typeSortOrder[b.type]) ? 1 : (a.name > b.name) ? 1 : -1 ))}
+                                {envList(props.envs?.sort((a, b) => (typeSortOrder[a.type] < typeSortOrder[b.type]) ? -1 : (typeSortOrder[a.type] > typeSortOrder[b.type]) ? 1 : (a.name > b.name) ? 1 : -1 ))}
                             </List>
                         </Collapse>
                     </ListItem>
@@ -230,9 +228,9 @@ export default function MiniDrawer(props) {
                 <div>
                     {alert.open && <Alert severity={alert.severity} onClose={() => {closeAlert()}}>{alert.message}</Alert>}
                 </div>
-                <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }} >
-                    {envCards(props.envs)}
-                </Grid>
+                <Envs envs={props.envs} selectEnv={selectEnv} />
+
+                <Devices devices={selectedEnv?.machines} />
                 <DrawerHeader />
                 <Button variant="outlined" onClick={handleOpenAddEnv}>Add Environment</Button> 
                 <AddEnv 
