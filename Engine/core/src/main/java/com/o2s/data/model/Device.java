@@ -1,19 +1,17 @@
-package com.o2s.db.model;
+package com.o2s.data.model;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.persistence.CollectionTable;
 import javax.persistence.ElementCollection;
-import javax.persistence.Embeddable;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.MapKeyColumn;
 import javax.persistence.Table;
 
-// @Embeddable
+
 @Entity
 @Table(name="Device")
 public class Device {
@@ -29,10 +27,8 @@ public class Device {
     private String os;
     private String protocol;
     
-    @ElementCollection
-    // @CollectionTable(name="DEVICE_PROPS")
-    // @MapKeyColumn(name="PROPS")
-    private Map<String, String> porps = new HashMap<>();
+    @ElementCollection(fetch = FetchType.EAGER)
+    private Map<String, String> props = new HashMap<>();
     
     public Integer getId() {
         return id;
@@ -82,11 +78,11 @@ public class Device {
     public void setProtocol(String protocol) {
         this.protocol = protocol;
     }
-    public Map<String, String> getPorps() {
-        return porps;
+    public Map<String, String> getProps() {
+        return props;
     }
-    public void setPorps(Map<String, String> porps) {
-        this.porps = porps;
+    public void setProps(Map<String, String> props) {
+        this.props = props;
     }
 
 }

@@ -1,13 +1,13 @@
-package com.o2s.db.repo;
+package com.o2s.data.repo;
 
 
-import com.o2s.db.model.Environment;
+import com.o2s.data.model.Environment;
 
 import java.util.List;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.transaction.Transactional;
+// import javax.persistence.EntityManager;
+// import javax.persistence.PersistenceContext;
+// import javax.transaction.Transactional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.o2s.db.model.Environment;
+import com.o2s.data.dto.EnvironmentDto;
 import com.o2s.svc.EnvironmentSvc;
 
 import reactor.core.publisher.Flux;
@@ -23,24 +23,24 @@ import reactor.core.publisher.Mono;
 // @CrossOrigin(origins = "http://localhost:8080")
 @RestController
 @RequestMapping("/o2s")
-public class EnvApi {
+public class EnvironmentApi {
 
     @Autowired
     EnvironmentSvc envService;
 
     @GetMapping("/envs")
-    public Flux<Environment> getEnvs(){
+    public Flux<EnvironmentDto> getEnvs(){
         return Flux.fromIterable(envService.getAllEnvs()).log();
     }
 
     @PostMapping(path = "/envs")
-    public Mono<Environment> addEnv(@RequestBody Environment env){
+    public Mono<Integer> addEnv(@RequestBody EnvironmentDto env){
         var addedEnv = envService.addEnv(env);
         return Mono.just(addedEnv).log();
     }
 
     @GetMapping(value = "/envs/{id}")
-    public Mono<Environment> getEnv(@PathVariable("id") Integer id) {
+    public Mono<EnvironmentDto> getEnv(@PathVariable("id") Integer id) {
         return Mono.just(envService.getEnvById(id));
     }
     

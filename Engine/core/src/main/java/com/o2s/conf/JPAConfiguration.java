@@ -17,7 +17,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @Configuration
-@EnableJpaRepositories(basePackages = "com.o2s.db.repo", entityManagerFactoryRef="entityManagerFactory")
+@EnableJpaRepositories(basePackages = "com.o2s.data.repo", entityManagerFactoryRef="entityManagerFactory")
 @EnableTransactionManagement
 public class JPAConfiguration {
 
@@ -42,7 +42,7 @@ public class JPAConfiguration {
     public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
         LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
         em.setDataSource(dataSource());
-        em.setPackagesToScan(new String[] { "com.o2s.db.model" });
+        em.setPackagesToScan(new String[] { "com.o2s.data.model" });
 
         JpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
         em.setJpaVendorAdapter(vendorAdapter);

@@ -1,12 +1,16 @@
 package com.o2s.svc;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.o2s.db.model.Environment;
-import com.o2s.db.repo.EnvironmentRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.o2s.data.dto.EnvironmentDto;
+import com.o2s.data.model.Environment;
+import com.o2s.data.repo.EnvironmentRepository;
 
 @Service
 public class EnvironmentSvc {
@@ -14,22 +18,27 @@ public class EnvironmentSvc {
     @Autowired
     EnvironmentRepository envRepo;
 
-    public Environment addEnv(String name, String desc, Environment.Type type){
-        var env = new Environment(name, desc, type);
-        envRepo.save(env);
-        return env;
+    public Integer addEnv(EnvironmentDto envDto){
+        var mapper = new ObjectMapper();    //TODO apt mapper usage
+        var targetEnv = mapper.convertValue(envDto, Environment.class);    
+        var persistedEnv = envRepo.save(targetEnv);
+
+        return persistedEnv.getId();
     }
 
-    public Environment addEnv(Environment env){
-        envRepo.save(env);
-        return env;
+    public List<EnvironmentDto> getAllEnvs(){
+        var envs = envRepo.findAll();
+        var resultEnvs = new ArrayList<EnvironmentDto>();
+        var mapper = new ObjectMapper(); 
+        for(var env : envs){
+            resultEnvs.add(mapper.convertValue(env, EnvironmentDto.class));
+        }
+        return resultEnvs;
     }
 
-    public List<Environment> getAllEnvs(){
-        return envRepo.findAll();
-    }
-
-    public Environment getEnvById(Integer id){
-        return envRepo.findById(id).get();
+    public EnvironmentDto getEnvById(Integer id){
+        var env = envRepo.findById(id).get();
+        var mapper = new ObjectMapper();
+        return mapper.convertValue(env, EnvironmentDto.class);
     }
 }

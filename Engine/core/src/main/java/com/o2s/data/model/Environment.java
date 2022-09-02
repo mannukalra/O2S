@@ -1,5 +1,6 @@
-package com.o2s.db.model;
+package com.o2s.data.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -11,30 +12,19 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.o2s.data.enm.EnvironmentType;
+import com.o2s.data.enm.Status;
+
 
 @Entity
 @Table(name="Environment")
 public class Environment {
-
-	public static enum Type{
-		PROD,
-		QA,
-		DEV,
-		OTHER
-	}
-
-	public static enum Status{
-		HEALTHY,
-		INFO,
-		WARNING,
-		ERROR
-	}
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 	private String name;
-	private Type type;
+	private EnvironmentType type;
 	private String description;
 	private String country;
 	private String state;
@@ -42,23 +32,23 @@ public class Environment {
 	private Status status;
 
 	@OneToMany(fetch = FetchType.EAGER, cascade = {CascadeType.ALL}, orphanRemoval = true)
-	private List<Device> devices;
+	private List<Device> devices = new ArrayList<>();
 
 	public Environment(){}
 
-	public Environment(String name, String description, Type type) {
+	public Environment(String name, String description, EnvironmentType type) {
 		this.name = name;
 		this.description = description;
 		if(type == null)
-			type = Type.OTHER;
+			type = EnvironmentType.OTHER;
 		this.type = type;
 	}
 
-	public Environment(String name, String description, Type type, String country, String state, String city) {
+	public Environment(String name, String description, EnvironmentType type, String country, String state, String city) {
 		this.name = name;
 		this.description = description;
 		if(type == null)
-			type = Type.OTHER;
+			type = EnvironmentType.OTHER;
 		this.type = type;
 		this.country = country;
 		this.state = state;
@@ -89,11 +79,11 @@ public class Environment {
 		this.description = description;
 	}
 
-	public Type getType() {
+	public EnvironmentType getType() {
 		return type;
 	}
 
-	public void setType(Type type) {
+	public void setType(EnvironmentType type) {
 		this.type = type;
 	}
 
