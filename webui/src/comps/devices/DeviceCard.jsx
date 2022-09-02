@@ -46,7 +46,7 @@ function DeviceCard(props) {
             <MoreVertIcon />
           </IconButton>
         }
-        title={props.device.hostname}
+        title={props.device.host}
         subheader={props.device.alias}
       />
       <CardContent>

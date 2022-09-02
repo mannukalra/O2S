@@ -230,7 +230,7 @@ export default function MiniDrawer(props) {
                 </div>
                 <Envs envs={props.envs} selectEnv={selectEnv} />
 
-                <Devices devices={selectedEnv?.machines} />
+                <Devices devices={selectedEnv?.devices} />
                 <DrawerHeader />
                 <Button variant="outlined" onClick={handleOpenAddEnv}>Add Environment</Button> 
                 <AddEnv 

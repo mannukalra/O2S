@@ -42,7 +42,7 @@ public class Environment {
 	private Status status;
 
 	@OneToMany(fetch = FetchType.EAGER, cascade = {CascadeType.ALL}, orphanRemoval = true)
-	private List<Machine> machines;
+	private List<Device> devices;
 
 	public Environment(){}
 
@@ -129,15 +129,13 @@ public class Environment {
 		this.status = status;
 	}
 
-	public List<Machine> getMachines() {
-		return machines;
+	public List<Device> getDevices() {
+		return devices;
 	}
 
-	public void setMachines(List<Machine> machines) {
-		this.machines = machines;
+	public void setDevices(List<Device> devices) {
+		this.devices = devices;
 	}	
-
-	
 	
 }
 

@@ -1,25 +1,38 @@
 package com.o2s.db.model;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.persistence.CollectionTable;
+import javax.persistence.ElementCollection;
+import javax.persistence.Embeddable;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.MapKeyColumn;
 import javax.persistence.Table;
 
+// @Embeddable
 @Entity
-@Table(name="Machine")
-public class Machine {
+@Table(name="Device")
+public class Device {
     
     @Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
-    private String hostName;
+    private String host;
+    private Integer port;
     private String alias;
     private String userName;
     private String password;
     private String os;
     private String protocol;
     
+    @ElementCollection
+    // @CollectionTable(name="DEVICE_PROPS")
+    // @MapKeyColumn(name="PROPS")
+    private Map<String, String> porps = new HashMap<>();
     
     public Integer getId() {
         return id;
@@ -27,11 +40,17 @@ public class Machine {
     public void setId(Integer id) {
         this.id = id;
     }
-    public String getHostName() {
-        return hostName;
+    public String getHost() {
+        return host;
     }
-    public void setHostName(String hostName) {
-        this.hostName = hostName;
+    public void setHost(String host) {
+        this.host = host;
+    }   
+    public Integer getPort() {
+        return port;
+    }
+    public void setPort(Integer port) {
+        this.port = port;
     }
     public String getAlias() {
         return alias;
@@ -63,7 +82,12 @@ public class Machine {
     public void setProtocol(String protocol) {
         this.protocol = protocol;
     }
-
-    
+    public Map<String, String> getPorps() {
+        return porps;
+    }
+    public void setPorps(Map<String, String> porps) {
+        this.porps = porps;
+    }
 
 }
+
