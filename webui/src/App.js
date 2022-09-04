@@ -1,12 +1,12 @@
 import './App.css';
 import { useEffect, useState } from 'react';
-import MiniDrawer from './comps/MiniDrawer';
+import O2S from './comps/O2S';
 
 
 function App() {
 
   const [envs, setEnvs] = useState([]);
-  const url = 'http://localhost:8080/o2s/envs';
+  const url = 'http://localhost:8080/env/envs';
 
   
   useEffect(() => {
@@ -26,7 +26,7 @@ function App() {
 
   return (
     <div className="App">
-      <MiniDrawer envs={envs}/>
+      <O2S envs={envs}/>
     </div>
   );
 }

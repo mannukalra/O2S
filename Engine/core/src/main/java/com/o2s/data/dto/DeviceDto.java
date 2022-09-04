@@ -8,6 +8,7 @@ import lombok.Data;
 @Data
 public class DeviceDto implements Serializable {
     private Integer id;
+    private Integer envId;
     private String host;
     private Integer port;
     private String alias;

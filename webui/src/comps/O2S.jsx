@@ -26,9 +26,9 @@ import IntegrationInstructionsIcon from '@mui/icons-material/IntegrationInstruct
 import LogoDevIcon from '@mui/icons-material/LogoDev';
 import LabelImportantIcon from '@mui/icons-material/LabelImportant';
 import Logo from '../img/o2s-logo.png';
-import AddEnv from './AddEnv';
 import Envs from './envs/Envs';
 import Devices from './devices/Devices';
+import Settings  from './settings/Settings';
 
 const drawerWidth = 280;
 const envsTxt = "Environments";
@@ -102,10 +102,10 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 );
 
 
-function envList(envs){
+function envList(envs, selectEnv){
     return envs.map((env, index) => (
         <Tooltip key={env.id} title={env.type +" Environment "+ env.name} placement="right-start">
-            <ListItemButton sx={{ pl: 4, ml: "18px" }}>
+            <ListItemButton sx={{ pl: 4, ml: "18px" }} id={env.id} onClick={selectEnv}>
                 <ListItemIcon sx={{ mr: "-7px", color: env.status ? evnStatusColors[env.status] : null }}>
                     {evnTypeIcons[env?.type]}
                 </ListItemIcon>
@@ -115,34 +115,26 @@ function envList(envs){
     ));
 }
 
-export default function MiniDrawer(props) {
+export default function O2S(props) {
     // const theme = useTheme();
-    const [open, setOpen] = React.useState(false);
+    const [drawerOpen, setDrawerOpen] = React.useState(false);
     const [alert, setAlert] = React.useState({open: false, severity: "", message: ""});
-    const [envOpen, setEnvOpen] = React.useState(false);
-    const [addEnvOpen, setAddEnvOpen] = React.useState(false);
+    const [envDDOpen, setEnvDDOpen] = React.useState(false);
     const [selectedEnv, setSelectedEnv] = React.useState(null);
+    const [selectedPage, setSelectedPage] = React.useState("E");
 
     const handleDrawerOpen = () => {
-        setOpen(true);
-        setEnvOpen(true);
+        setDrawerOpen(true);
+        setEnvDDOpen(true);
     };
 
     const handleDrawerClose = () => {
-        setOpen(false);
-        setEnvOpen(false);
+        setDrawerOpen(false);
+        setEnvDDOpen(false);
     };
 
-    const handleEnvDDClick = () => {
-        setEnvOpen(!envOpen);
-    };
-
-    const handleOpenAddEnv = () => {
-        setAddEnvOpen(true);
-    };
-    
-    const handleCloseAddEnv = () => {
-        setAddEnvOpen(false);
+    const handleEnvDDClick = (e) => {
+        setEnvDDOpen(!envDDOpen);
     };
 
     const openAlert = (severity, message)=>{
@@ -153,21 +145,35 @@ export default function MiniDrawer(props) {
         setAlert({ ...alert, open: false, severity: "", message: "" });
     }
 
-    const selectEnv = (env) => {
-        setSelectedEnv(env);
+    const selectEnv = (e) => {
+        setSelectedPage("E");
+        if(e.type != "click"){
+            setSelectedEnv(e);
+        }else if(e.currentTarget.id){
+            let currSelectedEnv = props.envs.find((env) => {
+                return env.id == e.currentTarget.id;
+            });//TODO ID based map to find fast
+            setSelectedEnv(currSelectedEnv);
+        }else{
+            setSelectedEnv(null);
+        }
+    };
+
+    const selectSettings = (e) => {
+        setSelectedPage("S");
     };
 
     return (
         <Box sx={{ display: 'flex' }}>
             <CssBaseline />
-            <AppBar position="fixed" open={open} sx={{ background: '#002F6C' }}>
+            <AppBar position="fixed" open={drawerOpen} sx={{ background: '#002F6C' }}>
                 <Toolbar>
                     <IconButton
                         color="inherit"
                         aria-label="open drawer"
                         onClick={handleDrawerOpen}
                         edge="start"
-                        sx={{ marginRight: 1.6, ...(open && { display: 'none' }) }}
+                        sx={{ marginRight: 1.6, ...(drawerOpen && { display: 'none' }) }}
                     >
                         <MenuIcon />
                     </IconButton>
@@ -176,7 +182,7 @@ export default function MiniDrawer(props) {
                         aria-label="close drawer"
                         onClick={handleDrawerClose}
                         edge="start"
-                        sx={{ marginRight: 1.6, ...(!open && { display: 'none' }) }}
+                        sx={{ marginRight: 1.6, ...(!drawerOpen && { display: 'none' }) }}
                     >
                         <ChevronLeftIcon />
                     </IconButton>
@@ -186,39 +192,39 @@ export default function MiniDrawer(props) {
                     </Typography> */}
                 </Toolbar>
             </AppBar>
-            <Drawer variant="permanent" open={open}>
+            <Drawer variant="permanent" open={drawerOpen}>
                 <DrawerHeader />
                 <Divider />
                 <List>
                     <ListItem key={envsTxt} disablePadding sx={{ display: 'block' }}>
-                        <ListItemButton sx={{ minHeight: 48, justifyContent: open ? 'initial' : 'center', px: 2.5 }} >
-                            <ListItemIcon sx={{ minWidth: 0, mr: open ? 2 : 'auto', justifyContent: 'center' }} >
+                        <ListItemButton sx={{ minHeight: 48, justifyContent: drawerOpen ? 'initial' : 'center', px: 2.5 }} >
+                            <ListItemIcon sx={{ minWidth: 0, mr: drawerOpen ? 2 : 'auto', justifyContent: 'center' }} onClick={selectEnv} >
                                 <Tooltip title={envsTxt} placement="right-start">
                                     <IconButton>
                                         <HiveIcon />
                                     </IconButton>
                                 </Tooltip>
                             </ListItemIcon>
-                            <ListItemText primary={envsTxt} sx={{ opacity: open ? 1 : 0 }} />
-                            {open ? envOpen ? <ExpandLess onClick={handleEnvDDClick} /> : <ExpandMore onClick={handleEnvDDClick} /> : ""}
+                            <ListItemText primary={envsTxt} sx={{ opacity: drawerOpen ? 1 : 0 }} onClick={selectEnv} />
+                            {drawerOpen ? envDDOpen ? <ExpandLess onClick={handleEnvDDClick} /> : <ExpandMore onClick={handleEnvDDClick} /> : ""}
                         </ListItemButton>
-                        <Collapse in={envOpen} timeout="auto" unmountOnExit>
+                        <Collapse in={envDDOpen} timeout="auto" unmountOnExit>
                             <List component="div" disablePadding >
-                                {envList(props.envs?.sort((a, b) => (typeSortOrder[a.type] < typeSortOrder[b.type]) ? -1 : (typeSortOrder[a.type] > typeSortOrder[b.type]) ? 1 : (a.name > b.name) ? 1 : -1 ))}
+                                {envList(props.envs?.sort((a, b) => (typeSortOrder[a.type] < typeSortOrder[b.type]) ? -1 : (typeSortOrder[a.type] > typeSortOrder[b.type]) ? 1 : (a.name > b.name) ? 1 : -1 ), selectEnv)}
                             </List>
                         </Collapse>
                     </ListItem>
                     <Divider />
-                    <ListItem key={settingsTxt} disablePadding sx={{ display: 'block' }}>
-                        <ListItemButton sx={{ minHeight: 48, justifyContent: open ? 'initial' : 'center', px: 2.5 }} >
-                            <ListItemIcon sx={{ minWidth: 0, mr: open ? 2 : 'auto', justifyContent: 'center' }} >
+                    <ListItem key={settingsTxt} disablePadding sx={{ display: 'block' }} onClick={selectSettings} >
+                        <ListItemButton sx={{ minHeight: 48, justifyContent: drawerOpen ? 'initial' : 'center', px: 2.5 }} >
+                            <ListItemIcon sx={{ minWidth: 0, mr: drawerOpen ? 2 : 'auto', justifyContent: 'center' }} >
                                 <Tooltip title={settingsTxt} placement="right-start">
                                     <IconButton>
                                         <SettingsIcon />
                                     </IconButton>
                                 </Tooltip>
                             </ListItemIcon>
-                            <ListItemText primary={settingsTxt} sx={{ opacity: open ? 1 : 0 }} />
+                            <ListItemText primary={settingsTxt} sx={{ opacity: drawerOpen ? 1 : 0 }} />
                         </ListItemButton>
                     </ListItem>
                 </List>
@@ -228,17 +234,13 @@ export default function MiniDrawer(props) {
                 <div>
                     {alert.open && <Alert severity={alert.severity} onClose={() => {closeAlert()}}>{alert.message}</Alert>}
                 </div>
-                <Envs envs={props.envs} selectEnv={selectEnv} />
-
-                <Devices devices={selectedEnv?.devices} />
-                <DrawerHeader />
-                <Button variant="outlined" onClick={handleOpenAddEnv}>Add Environment</Button> 
-                <AddEnv 
-                    label="Add Environment"
-                    env={{name:"", type:"", country:"", state:"", city:""}}
-                    open={addEnvOpen}
-                    openAlert={openAlert}
-                    handleClose={handleCloseAddEnv}/>
+                {
+                selectedPage == "S" ? <Settings />:
+                selectedPage == "E" && selectedEnv ? 
+                    <Devices devices={selectedEnv?.devices} envId={selectedEnv.id} openAlert={openAlert} /> : 
+                    <Envs envs={props.envs} selectEnv={selectEnv} openAlert={openAlert}/>
+                }
+                
             </Box>
         </Box>
     );

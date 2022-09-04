@@ -55,7 +55,7 @@ function AddEnv(props) {
     function saveEnv(event) {
         event.preventDefault();
         (async () => {
-            const rawResponse = await fetch('http://localhost:8080/o2s/envs', {
+            const rawResponse = await fetch('http://localhost:8080/env/envs', {
               method: 'POST',
               headers: {
                 'Accept': 'application/json',
@@ -70,37 +70,7 @@ function AddEnv(props) {
             props.openAlert("success", "Saved Environment Successfully!");
           })();
     };
-    // const [name, setName] = React.useState('');
-    // const [type, setType] = React.useState("PROD");
-    // const [country, setCountry] = React.useState('');
-    // const [statee, setStatee] = React.useState('');
-    // const [city, setCity] = React.useState('');
-    // const [description, setDescription] = React.useState('');
-
-    // const handleNameChange = (event) => {
-    //     setName(event.target.value);
-    // };
-
-    // const handleTypeChange = (event) => {
-    //     setType(event.target.value);
-    // };
-
-    // const handleCountryChange = (event) => {
-    //     setCountry(event.target.value);
-    // };
-
-    // const handleStateeChange = (event) => {
-    //     setStatee(event.target.value);
-    // };
-
-    // const handleCityChange = (event) => {
-    //     setCity(event.target.value);
-    // };
-
-    // const handleDescChange = (event) => {
-    //     setDescription(event.target.value);
-    // };
-
+   
     return (
         <Dialog open={props.open} onClose={props.handleClose} maxWidth='lg'>
             <DialogTitle>{props.label}</DialogTitle>
