@@ -74,7 +74,12 @@
 			<version>31.1-jre</version>
 		</dependency>
 
-
+		<!-- https://mvnrepository.com/artifact/io.cloudsoft.windows/winrm4j -->
+		<dependency>
+			<groupId>io.cloudsoft.windows</groupId>
+			<artifactId>winrm4j</artifactId>
+			<version>0.12.3</version>
+		</dependency>
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

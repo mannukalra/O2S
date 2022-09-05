@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.o2s.conn.SSHConnection;
+import com.o2s.conn.WinRMConnection;
 import com.o2s.data.dto.DeviceDto;
 
 import reactor.core.publisher.Mono;
@@ -19,7 +20,12 @@ public class DeviceApi {
 
     @PostMapping(path = "/retrieve")
     public Mono<Map<String, String>> addEnv(@RequestBody DeviceDto device){
-        var result = new SSHConnection(device.getHost(), device.getUserName(), device.getPassword()).runCommand("cat /etc/os-release");
+        String result = null;
+        if("SSH".equalsIgnoreCase(device.getProtocol())){
+            result = new SSHConnection(device.getHost(), device.getUserName(), device.getPassword()).runCommand("cat /etc/os-release");
+        }else{
+            result = new WinRMConnection(device.getHost(), device.getUserName(), device.getPassword()).runCommand("[System.Environment]::OSVersion");
+        }
         return Mono.just(Map.of("result", result)).log();
     }
     

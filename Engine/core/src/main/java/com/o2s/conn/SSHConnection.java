@@ -13,9 +13,6 @@ import com.jcraft.jsch.Session;
 
 public class SSHConnection implements Connection {
 
-    String host="ssh.journaldev.com";
-    String user="sshuser";
-    String password="sshpwd";
     Session session;
     
 

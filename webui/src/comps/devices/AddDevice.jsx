@@ -31,7 +31,7 @@ function AddDevice(props) {
     function retrieveDevice(event) {
         event.preventDefault();
         (async () => {
-            const rawResponse = await fetch('http://localhost:8080/device/retrieve', {
+            const rawResponse = await fetch('https://localhost:8443/device/retrieve', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
