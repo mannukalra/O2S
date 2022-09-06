@@ -22,9 +22,9 @@ public class DeviceApi {
     public Mono<Map<String, String>> addEnv(@RequestBody DeviceDto device){
         String result = null;
         if("SSH".equalsIgnoreCase(device.getProtocol())){
-            result = new SSHConnection(device.getHost(), device.getUserName(), device.getPassword()).runCommand("cat /etc/os-release");
+            result = new SSHConnection(device.getHost(), device.getUserName(), device.getPassword()).runCommand("egrep '^(VERSION|NAME)=' /etc/os-release");
         }else{
-            result = new WinRMConnection(device.getHost(), device.getUserName(), device.getPassword()).runCommand("[System.Environment]::OSVersion");
+            result = new WinRMConnection(device.getHost(), device.getUserName(), device.getPassword()).runCommand("(Get-WmiObject -class Win32_OperatingSystem).Caption");
         }
         return Mono.just(Map.of("result", result)).log();
     }

@@ -80,6 +80,11 @@
 			<artifactId>winrm4j</artifactId>
 			<version>0.12.3</version>
 		</dependency>
+		<dependency>
+			<groupId>org.openjdk.nashorn</groupId>
+			<artifactId>nashorn-core</artifactId>
+			<version>15.4</version>
+		</dependency>
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

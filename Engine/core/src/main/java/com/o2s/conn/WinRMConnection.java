@@ -1,34 +1,15 @@
 package com.o2s.conn;
 
 import org.apache.http.client.config.AuthSchemes;
-import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-
-import com.o2s.util.SkipCertValidation;
-
 import io.cloudsoft.winrm4j.client.WinRmClientContext;
 import io.cloudsoft.winrm4j.winrm.WinRmTool;
 import io.cloudsoft.winrm4j.winrm.WinRmToolResponse;
-
-import javax.net.ssl.*;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.Socket;
-import java.net.URL;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
 
 public class WinRMConnection implements Connection{
     
     WinRmClientContext context;
     WinRmTool tool;
 
-    final static HostnameVerifier DO_NOT_VERIFY = new HostnameVerifier() {
-        public boolean verify(String hostname, SSLSession session) {
-            return true;
-        }
-    };
 
     public WinRMConnection(String host, String user, String password) {
         context = WinRmClientContext.newInstance();
@@ -38,7 +19,6 @@ public class WinRMConnection implements Connection{
                 .authenticationScheme(AuthSchemes.NTLM)
                 .port(5985)
                 .useHttps(false)
-                .hostnameVerifier(DO_NOT_VERIFY)
                 .context(context)
                 .build();
             tool.setConnectionTimeout(5000l);
