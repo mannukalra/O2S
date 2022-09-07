@@ -22,7 +22,8 @@ public class DeviceApi {
     public Mono<Map<String, String>> addEnv(@RequestBody DeviceDto device){
         String result = null;
         if("SSH".equalsIgnoreCase(device.getProtocol())){
-            result = new SSHConnection(device.getHost(), device.getUserName(), device.getPassword()).runCommand("egrep '^(VERSION|NAME)=' /etc/os-release");
+            String os = new SSHConnection(device.getHost(), device.getUserName(), device.getPassword()).getOS();
+            result = os; //TODO trigger discovery based on os
         }else{
             result = new WinRMConnection(device.getHost(), device.getUserName(), device.getPassword()).runCommand("(Get-WmiObject -class Win32_OperatingSystem).Caption");
         }

@@ -10,6 +10,7 @@ import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
+import com.o2s.util.RegexUtil;
 
 public class SSHConnection implements Connection {
 
@@ -29,6 +30,20 @@ public class SSHConnection implements Connection {
         }
         
         System.out.println("Connected");
+    }
+
+
+    public String getOS(){
+        String result = runCommand("egrep '^(NAME|VERSION)=' /etc/os-release");//TODO read cmds and patterns from props
+        if(result != null){
+            String name = RegexUtil.findMatch(result, "(?<=NAME=\")(.*)(?=\")", 1);
+            String version = RegexUtil.findMatch(result, "(?<=VERSION=\")([0-9.]+)", 1);
+            if(name != null && version != null)
+                result = name +" "+ version;
+        }else{
+            //try windows cmds
+        }
+        return result;
     }
 
 
