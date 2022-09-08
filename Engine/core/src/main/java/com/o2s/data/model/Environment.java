@@ -9,9 +9,12 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.o2s.data.enm.EnvironmentType;
 import com.o2s.data.enm.Status;
 
@@ -31,7 +34,9 @@ public class Environment {
 	private String city;
 	private Status status;
 
-	@OneToMany(fetch = FetchType.EAGER, cascade = {CascadeType.ALL}, orphanRemoval = true)
+	@OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.ALL}, orphanRemoval = true)
+	@JoinColumn(name = "env_id")
+	@JsonIgnore
 	private List<Device> devices = new ArrayList<>();
 
 	public Environment(){}

@@ -1,5 +1,5 @@
 import { Button, Grid } from '@mui/material';
-import React from 'react';
+import { useEffect, useState } from 'react';
 import DeviceCard from './DeviceCard';
 import AddDevice from './AddDevice';
 
@@ -13,7 +13,29 @@ function deviceCards(devices) {
 }
 
 function Devices(props) {
-    const [addDeviceOpen, setAddDeviceOpen] = React.useState(false);
+    // const [envId, setEnvId] = useState(props.envId);
+    const [devices, setDevices] = useState([]);
+    const [addDeviceOpen, setAddDeviceOpen] = useState(false);
+
+    const url = "https://localhost:8443/device/devices/"+ props.envId;
+
+    
+    useEffect(() => {
+        async function fetchDevices() {
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                if(data)
+                    setDevices(data);
+                // console.log(data)
+            });
+        }
+        fetchDevices();
+        // const interval = setInterval(fetchDevices, 5000);
+        // return () => clearInterval(interval);
+    }, [url]);
+
+    
     const handleOpenAddDevice = () => {
         setAddDeviceOpen(true);
     };
@@ -25,7 +47,7 @@ function Devices(props) {
     return (
         <div>
             <Grid container rowSpacing={1} >
-                {deviceCards(props.devices)}
+                {deviceCards(devices)}
             </Grid>
             <br />
             <Button variant="outlined" onClick={handleOpenAddDevice}>Add Device</Button> 

@@ -237,7 +237,7 @@ export default function O2S(props) {
                 {
                 selectedPage == "S" ? <Settings />:
                 selectedPage == "E" && selectedEnv ? 
-                    <Devices devices={selectedEnv?.devices} envId={selectedEnv.id} openAlert={openAlert} /> : 
+                    <Devices envId={selectedEnv.id} openAlert={openAlert} /> : 
                     <Envs envs={props.envs} selectEnv={selectEnv} openAlert={openAlert}/>
                 }
                 

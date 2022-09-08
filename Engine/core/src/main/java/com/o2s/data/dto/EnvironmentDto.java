@@ -3,6 +3,7 @@ package com.o2s.data.dto;
 import java.io.Serializable;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.o2s.data.enm.EnvironmentType;
 import com.o2s.data.enm.Status;
 

@@ -9,7 +9,11 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 
 @Entity
@@ -26,6 +30,11 @@ public class Device {
     private String password;
     private String os;
     private String protocol;
+
+    @ManyToOne
+    @JoinColumn(name="env_id", nullable=false)
+    @JsonIgnore
+    private Environment environment;
     
     @ElementCollection(fetch = FetchType.EAGER)
     private Map<String, String> props = new HashMap<>();
@@ -83,6 +92,12 @@ public class Device {
     }
     public void setProps(Map<String, String> props) {
         this.props = props;
+    }
+    public Environment getEnvironment() {
+        return environment;
+    }
+    public void setEnvironment(Environment environment) {
+        this.environment = environment;
     }
 
 }
