@@ -3,7 +3,7 @@ package com.o2s.data.dto;
 import java.io.Serializable;
 import java.util.Map;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Data;
 
@@ -18,7 +18,7 @@ public class DeviceDto implements Serializable {
     private String os;
     private String protocol;
     
-    @JsonIgnore
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Integer envId;
     
     private Map<String, String> props;

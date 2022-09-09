@@ -33,10 +33,10 @@ public class EnvironmentApi {
         return Flux.fromIterable(envService.getAllEnvs()).log();
     }
 
-    @PostMapping(path = "/envs")
+    @PostMapping(path = "/env")
     public Mono<Integer> addEnv(@RequestBody EnvironmentDto env){
-        var addedEnv = envService.addEnv(env);
-        return Mono.just(addedEnv).log();
+        var addedEnvId = envService.addEnv(env);
+        return Mono.just(addedEnvId).log();
     }
 
     @GetMapping(value = "/envs/{id}")

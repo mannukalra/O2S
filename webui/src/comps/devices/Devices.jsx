@@ -51,12 +51,14 @@ function Devices(props) {
             </Grid>
             <br />
             <Button variant="outlined" onClick={handleOpenAddDevice}>Add Device</Button> 
-            <AddDevice 
-                label="Add Device"
-                open={addDeviceOpen}
-                device={{envId: props.envId, host: "", protocol: "", userName: "", password: ""}}
-                openAlert={props.openAlert}
-                handleClose={handleCloseAddDevice}/>
+            {   addDeviceOpen &&
+                <AddDevice 
+                    label="Add Device"
+                    open={addDeviceOpen}
+                    device={{envId: props.envId, host: "", protocol: "SSH", userName: "", password: ""}}
+                    openAlert={props.openAlert}
+                    handleClose={handleCloseAddDevice}/>
+            }
         </div>
     );
 }

@@ -38,7 +38,13 @@ public class DeviceApi {
     }
     
     @GetMapping(value = "/devices/{envId}")
-    public Flux<DeviceDto> getEnv(@PathVariable("envId") Integer envId) {
+    public Flux<DeviceDto> getDevicesByEnv(@PathVariable("envId") Integer envId) {
         return Flux.fromIterable(deviceSvc.getDevicesByEnvId(envId)).log();
+    }
+
+    @PostMapping(path = "/device")
+    public Mono<Integer> addDevice(@RequestBody DeviceDto deviceDto){
+        var addedDeviceId = deviceSvc.addDevice(deviceDto);
+        return Mono.just(addedDeviceId).log();
     }
 }

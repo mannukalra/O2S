@@ -1,7 +1,8 @@
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, MenuItem, TextField } from '@mui/material';
 import React from 'react';
 
-
+//TODO Consts for env/device status
+const protocols = [ { value: 'SSH', label: 'SSH'}, { value: 'WINRM', label: 'WINRM'}];
 
 function AddDevice(props) {
     const [device, setDevice] = React.useState(props.device);
@@ -27,6 +28,26 @@ function AddDevice(props) {
         }
     }
 
+
+    function saveDevice(event) {
+        debugger;
+        event.preventDefault();
+        (async () => {
+            const rawResponse = await fetch('https://localhost:8443/device/device', {
+              method: 'POST',
+              headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(device)
+            });
+            const content = await rawResponse.json();
+          
+            console.log("saved device with id -"+content.id);
+            props.handleClose();
+            props.openAlert("success", "Saved Device Successfully!");
+          })();
+    };
     
     function retrieveDevice(event) {
         event.preventDefault();
@@ -61,7 +82,16 @@ function AddDevice(props) {
                         <tbody>
                             <tr>
                                 <td><TextField id="outlined-host" label="Host" name="host" value={device.host} onChange={handleChange} required /></td>
-                                <td><TextField id="outlined-protocol" label="Protocol" name="protocol" value={device.name} onChange={handleChange} required /></td>
+                                <td>
+                                    <TextField id="outlined-protocol" label="Protocol" name="protocol" 
+                                    value={device.protocol} onChange={handleChange} select required >
+                                        {protocols.map((option) => (
+                                            <MenuItem key={option.value} value={option.value}>
+                                                {option.label}
+                                            </MenuItem>
+                                        ))}
+                                    </TextField>
+                                </td>
                             </tr>
                             <tr>
                                 <td><TextField id="outlined-username" label="User" name="userName" value={device.userName} onChange={handleChange} required /> </td>
@@ -73,7 +103,7 @@ function AddDevice(props) {
             </DialogContent>
             <DialogActions>
                 <Button variant="outlined" onClick={props.handleClose} >Cancel</Button>
-                <Button variant="outlined" onClick={retrieveDevice}>Retrieve</Button>
+                <Button variant="outlined" onClick={saveDevice}>Retrieve</Button>
             </DialogActions>
         </Dialog>);
 }
