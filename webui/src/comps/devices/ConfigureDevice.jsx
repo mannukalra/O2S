@@ -47,8 +47,7 @@ function ConfigureDevice(props) {
                         <td><TextField id="outlined-password" label="Password" name="password" value={device.password} onChange={handleChange} required /> </td>
                     </tr>
                     <tr>
-                        <td><TextField id="outlined-username" label="User" name="userName" value={device.userName} onChange={handleChange} required /> </td>
-                        <td><TextField id="outlined-password" label="Password" name="password" value={device.protocol} onChange={handleChange} required /> </td>
+                        <td><TextField id="outlined-protocol" label="Protocol" name="protocol" value={device.protocol} onChange={handleChange} required /> </td>
                     </tr>
                 </tbody>
             </table>

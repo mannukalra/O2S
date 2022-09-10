@@ -37,7 +37,7 @@ function EnvCard(props) {
   };
 
   return (
-    <Card sx={{ maxWidth: 432, margin: "7px" }} onClick={handleSelect} >
+    <Card sx={{ maxWidth: 432, margin: "5px" }} onClick={handleSelect} >
       <CardHeader
         avatar={
           <Avatar sx={{ bgcolor: green[500] }} aria-label="recipe">

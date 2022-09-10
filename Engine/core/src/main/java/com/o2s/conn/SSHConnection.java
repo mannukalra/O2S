@@ -33,7 +33,8 @@ public class SSHConnection implements Connection {
     }
 
 
-    public String getOS(){
+    @Override
+    public String discoverOS(){
         String result = runCommand("egrep '^(NAME|VERSION)=' /etc/os-release");//TODO read cmds and patterns from props
         if(result == null || "".equals(result) ){
             result = runCommand("powershell -command (Get-WmiObject -class Win32_OperatingSystem).Caption");

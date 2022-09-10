@@ -31,6 +31,12 @@ public class WinRMConnection implements Connection{
     }
 
     @Override
+    public String discoverOS(){
+        var result = runCommand("(Get-WmiObject -class Win32_OperatingSystem).Caption");
+        return result;
+    }
+
+    @Override
     public String runCommand(String cmd) {
         WinRmToolResponse winRmResponse = tool.executePs(cmd);
         var result = winRmResponse.getStdOut();

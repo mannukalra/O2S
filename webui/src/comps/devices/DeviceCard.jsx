@@ -33,7 +33,7 @@ function DeviceCard(props) {
   };
 
   return (
-    <Card sx={{ marginBottom: "7px" }} >
+    <Card sx={{ marginTop: "5px" }} >
       <CardHeader
         avatar={
           <Avatar sx={{ bgcolor: blue[500] }} aria-label="recipe">

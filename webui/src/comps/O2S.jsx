@@ -245,12 +245,16 @@ export default function O2S(props) {
             </Drawer>
             <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
                 <DrawerHeader />
-                <table width="100%">
-                    <tr>
-                        <td><Typography align='left' variant='h6' >{getLabel()}</Typography></td>
-                        <td>{alert.open && <Alert severity={alert.severity} onClose={() => {closeAlert()}}>{alert.message}</Alert>}</td>
-                    </tr>
-                </table>
+                <Grid container>
+                    <Grid xs={4} md={4}>
+                        <Typography align='left' variant='body1' >{getLabel()}</Typography>
+                    </Grid>
+                    <Grid xs={8} md={8} sx={{marginTop:"-14px"}}>
+                        {alert.open && <Alert severity={alert.severity} 
+                            sx={{minWidth: "max-width"}}
+                            onClose={() => {closeAlert()}}>{alert.message}</Alert>}
+                    </Grid>
+                </Grid>
                 {
                 selectedPage == "S" ? <Settings />:
                 selectedPage == "E" && selectedEnv ? 
