@@ -1,7 +1,10 @@
 package com.o2s.conn;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import com.google.common.io.CharStreams;
@@ -11,6 +14,7 @@ import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import com.o2s.util.RegexUtil;
+import com.o2s.util.nashorn.NHEngine;
 
 public class SSHConnection implements Connection {
 
@@ -33,8 +37,8 @@ public class SSHConnection implements Connection {
     }
 
 
-    @Override
-    public String discoverOS(){
+    
+    public String discoverOS_old(){//todo cleanup
         String result = runCommand("egrep '^(NAME|VERSION)=' /etc/os-release");//TODO read cmds and patterns from props
         if(result == null || "".equals(result) ){
             result = runCommand("powershell -command (Get-WmiObject -class Win32_OperatingSystem).Caption");
@@ -47,12 +51,50 @@ public class SSHConnection implements Connection {
         return result;
     }
 
+    @Override
+    public String discoverOS(){
+        String result = "";
+        var osConfig = NHEngine.getOsRetreivalConfig();
+        for(var conf : osConfig){
+            try {
+                var cmdOutput = runCommand((String)conf.get("command"));
+                if(cmdOutput != null && !cmdOutput.equals("")){//check nonzero exit status
+                    if(conf.containsKey("regex")){
+                        var regexPatterns = (List<Map<String, Object>>)conf.get("regex");
+                        for(var ptrnEntry : regexPatterns){
+                            String match = RegexUtil.findMatch(cmdOutput, (String)ptrnEntry.get("pattern"), ((Double)ptrnEntry.get("targetGroup")).intValue() );
+                            if(((String)ptrnEntry.get("key")).equals("name")){
+                                result = match +" "+ result;
+                            }else{
+                                result = result+" "+match;
+                            }
+                        }
+                        result = result.replace("  ", " ");
+                    }else{
+                        result = cmdOutput;
+                    }
+                }
+
+                if(!result.equals(""))
+                    break;
+            } catch (Exception e) {
+                e.printStackTrace();
+                // handle exception
+            }
+            
+        }
+        if(result.equals("") ){
+            //log error
+        }
+        return result;
+    }
 
     @Override
     public String runCommand(String cmd) {
         String result = null;
 
         Channel channel = null;
+
         try{
             if(session.isConnected()){
                 channel = session.openChannel("exec");
@@ -60,16 +102,22 @@ public class SSHConnection implements Connection {
                 channel.setInputStream(null);
                 ((ChannelExec)channel).setErrStream(System.err);
                 
-                var stream = channel.getInputStream();
-                channel.connect();
+                try (var stream = channel.getInputStream();
+                    var errStream = channel.getExtInputStream()){
 
-                result = CharStreams.toString(new InputStreamReader(stream, "UTF-8"));
-                
+                    channel.connect();
+                    result = CharStreams.toString(new InputStreamReader(stream, "UTF-8"));
+                    System.out.println(result);
+                }
             }
         }catch(JSchException | IOException e){
             e.printStackTrace(); //TODO
         }finally{
-           if(channel != null) channel.disconnect();
+            if(channel != null){
+                // if(channel.getExitStatus() != 0) //JSCH NonZeroExitStatus error handling
+                    // throw new RuntimeException("NonZeroExitStatus");
+                channel.disconnect();
+            }
         }
         return result;
     }

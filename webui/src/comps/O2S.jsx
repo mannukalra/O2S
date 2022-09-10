@@ -246,10 +246,10 @@ export default function O2S(props) {
             <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
                 <DrawerHeader />
                 <Grid container>
-                    <Grid xs={4} md={4}>
+                    <Grid item xs={4} md={4}>
                         <Typography align='left' variant='body1' >{getLabel()}</Typography>
                     </Grid>
-                    <Grid xs={8} md={8} sx={{marginTop:"-14px"}}>
+                    <Grid item xs={8} md={8} sx={{marginTop:"-14px"}}>
                         {alert.open && <Alert severity={alert.severity} 
                             sx={{minWidth: "max-width"}}
                             onClose={() => {closeAlert()}}>{alert.message}</Alert>}

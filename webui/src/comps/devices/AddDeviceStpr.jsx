@@ -46,9 +46,8 @@ export default function AddDeviceStpr(props) {
             });
             const content = await rawResponse.json();
         
-            console.log("Retieved device with result -"+content.result);
-            // setDevice({ ...device, os: content.getOs() });
-            setDevice(content);
+            console.log("Retieved device with result -"+content.os);
+            setDevice({ ...device, os: content.os, alias: "" });
             setActiveStep(1);
         })();
     };

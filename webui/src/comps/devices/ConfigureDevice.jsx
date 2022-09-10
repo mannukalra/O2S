@@ -21,6 +21,9 @@ function ConfigureDevice(props) {
             case 'password':
                 setDeviceLocal({ ...device, password: value });
                 break;
+            case 'alias':
+                setDeviceLocal({ ...device, alias: value });
+                break;
             default:
                 break;
         }
@@ -47,7 +50,7 @@ function ConfigureDevice(props) {
                         <td><TextField id="outlined-password" label="Password" name="password" value={device.password} onChange={handleChange} required /> </td>
                     </tr>
                     <tr>
-                        <td><TextField id="outlined-protocol" label="Protocol" name="protocol" value={device.protocol} onChange={handleChange} required /> </td>
+                        <td><TextField id="outlined-alias" label="Alias" name="alias" value={device.alias} onChange={handleChange} required /> </td>
                     </tr>
                 </tbody>
             </table>
