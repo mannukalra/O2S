@@ -163,6 +163,20 @@ export default function O2S(props) {
         setSelectedPage("S");
     };
 
+    const getLabel = () => {
+        var label = "ssssssssssss";
+        if(selectedPage == 'S'){
+            label = "Settings"
+        }else if(selectedPage == 'E'){
+            if(selectedEnv){
+                label = selectedEnv.name+ " devices";
+            }else{
+                label = "All Environments";
+            }
+        }
+        return label;
+    }
+
     return (
         <Box sx={{ display: 'flex' }}>
             <CssBaseline />
@@ -231,13 +245,16 @@ export default function O2S(props) {
             </Drawer>
             <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
                 <DrawerHeader />
-                <div>
-                    {alert.open && <Alert severity={alert.severity} onClose={() => {closeAlert()}}>{alert.message}</Alert>}
-                </div>
+                <table width="100%">
+                    <tr>
+                        <td><Typography align='left' variant='h6' >{getLabel()}</Typography></td>
+                        <td>{alert.open && <Alert severity={alert.severity} onClose={() => {closeAlert()}}>{alert.message}</Alert>}</td>
+                    </tr>
+                </table>
                 {
                 selectedPage == "S" ? <Settings />:
                 selectedPage == "E" && selectedEnv ? 
-                    <Devices envId={selectedEnv.id} openAlert={openAlert} /> : 
+                    <Devices envId={selectedEnv.id} label={selectedEnv.name} openAlert={openAlert} /> : 
                     <Envs envs={props.envs} selectEnv={selectEnv} openAlert={openAlert}/>
                 }
                 

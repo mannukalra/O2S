@@ -35,13 +35,13 @@ public class SSHConnection implements Connection {
 
     public String getOS(){
         String result = runCommand("egrep '^(NAME|VERSION)=' /etc/os-release");//TODO read cmds and patterns from props
-        if(result != null){
+        if(result == null || "".equals(result) ){
+            result = runCommand("powershell -command (Get-WmiObject -class Win32_OperatingSystem).Caption");
+        }else{
             String name = RegexUtil.findMatch(result, "(?<=NAME=\")(.*)(?=\")", 1);
             String version = RegexUtil.findMatch(result, "(?<=VERSION=\")([0-9.]+)", 1);
             if(name != null && version != null)
                 result = name +" "+ version;
-        }else{
-            //try windows cmds
         }
         return result;
     }

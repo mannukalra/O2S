@@ -1,7 +1,7 @@
 import { Button, Grid } from '@mui/material';
 import { useEffect, useState } from 'react';
 import DeviceCard from './DeviceCard';
-import AddDevice from './AddDevice';
+import AddDevice from './AddDeviceStpr';
 
 
 function deviceCards(devices) {
