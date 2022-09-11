@@ -28,12 +28,12 @@ public class DeviceApi {
 
     @PostMapping(path = "/retrieve")
     public Mono<DeviceDto> addEnv(@RequestBody DeviceDto device){
-        String os = "";
         var connection = ConnectionFactory.createConnection(device);
         if(connection != null){
-            os = connection.discoverOS();
+            device = connection.discoverOS(device);
+        }else{
+            // error while establishing connection
         }
-        device.setOs(os);
 
         //TODO identify deploypath and create dir structure and add to props
         return Mono.just(device).log();

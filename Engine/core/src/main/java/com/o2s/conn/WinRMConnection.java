@@ -1,6 +1,9 @@
 package com.o2s.conn;
 
 import org.apache.http.client.config.AuthSchemes;
+
+import com.o2s.data.dto.DeviceDto;
+
 import io.cloudsoft.winrm4j.client.WinRmClientContext;
 import io.cloudsoft.winrm4j.winrm.WinRmTool;
 import io.cloudsoft.winrm4j.winrm.WinRmToolResponse;
@@ -31,9 +34,10 @@ public class WinRMConnection implements Connection{
     }
 
     @Override
-    public String discoverOS(){
-        var result = runCommand("(Get-WmiObject -class Win32_OperatingSystem).Caption");
-        return result;
+    public DeviceDto discoverOS(DeviceDto device){//TODO use json config
+        var os = runCommand("(Get-WmiObject -class Win32_OperatingSystem).Caption");
+        device.setOs(os);
+        return device;
     }
 
     @Override

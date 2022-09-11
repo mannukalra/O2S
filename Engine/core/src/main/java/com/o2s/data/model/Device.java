@@ -14,6 +14,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.o2s.data.enm.DeviceType;
 
 
 @Entity
@@ -30,6 +31,7 @@ public class Device {
     private String password;
     private String os;
     private String protocol;
+    private DeviceType type;
 
     @ManyToOne
     @JoinColumn(name="env_id", nullable=false)
@@ -99,6 +101,12 @@ public class Device {
     public void setEnvironment(Environment environment) {
         this.environment = environment;
     }
-
+    public DeviceType getType() {
+        return type;
+    }
+    public void setType(DeviceType type) {
+        this.type = type;
+    }
+    
 }
 

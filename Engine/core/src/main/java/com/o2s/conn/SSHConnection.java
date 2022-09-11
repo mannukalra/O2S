@@ -13,6 +13,8 @@ import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
+import com.o2s.data.dto.DeviceDto;
+import com.o2s.data.enm.DeviceType;
 import com.o2s.util.RegexUtil;
 import com.o2s.util.nashorn.NHEngine;
 
@@ -52,7 +54,7 @@ public class SSHConnection implements Connection {
     }
 
     @Override
-    public String discoverOS(){
+    public DeviceDto discoverOS(DeviceDto device){
         String result = "";
         var osConfig = NHEngine.getOsRetreivalConfig();
         for(var conf : osConfig){
@@ -75,8 +77,11 @@ public class SSHConnection implements Connection {
                     }
                 }
 
-                if(!result.equals(""))
+                if(!result.equals("")){
+                    device.setOs(result);
+                    device.setType(DeviceType.valueOf((String)conf.get("type")));
                     break;
+                }
             } catch (Exception e) {
                 e.printStackTrace();
                 // handle exception
@@ -86,13 +91,13 @@ public class SSHConnection implements Connection {
         if(result.equals("") ){
             //log error
         }
-        return result;
+
+        return device;
     }
 
     @Override
     public String runCommand(String cmd) {
         String result = null;
-
         Channel channel = null;
 
         try{
@@ -120,6 +125,16 @@ public class SSHConnection implements Connection {
             }
         }
         return result;
+    }
+
+    public void configureMonitoring(DeviceDto device){
+        //user-home path dir strucure
+        if(device.getType() == DeviceType.LINUX){
+
+
+        }else if(device.getType() == DeviceType.WINDOWS){
+            
+        }
     }
     
 }

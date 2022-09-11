@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.o2s.data.enm.DeviceType;
 
 import lombok.Data;
 
@@ -17,7 +18,8 @@ public class DeviceDto implements Serializable {
     private String password;
     private String os;
     private String protocol;
-    
+    private DeviceType type;
+
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Integer envId;
     

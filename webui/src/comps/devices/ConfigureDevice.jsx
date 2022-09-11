@@ -15,6 +15,9 @@ function ConfigureDevice(props) {
             case 'os':
                 setDeviceLocal({ ...device, os: value });
                 break;
+            case 'type':
+                setDeviceLocal({ ...device, type: value });
+                break;
             case 'userName':
                 setDeviceLocal({ ...device, userName: value });
                 break;
@@ -51,6 +54,7 @@ function ConfigureDevice(props) {
                     </tr>
                     <tr>
                         <td><TextField id="outlined-alias" label="Alias" name="alias" value={device.alias} onChange={handleChange} required /> </td>
+                        <td><TextField id="outlined-type" label="Type" name="type" value={device.type} onChange={handleChange} required /> </td>
                     </tr>
                 </tbody>
             </table>

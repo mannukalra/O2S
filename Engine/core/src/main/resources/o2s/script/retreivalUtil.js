@@ -12,7 +12,7 @@ function osRetreivalConfig(){
     // entry sequence decides the retrieval order try in case of ssh connection, 
     // ex: Linux then Windows if linux commands fail to return valid os
     var config = [{
-        type: "linux",
+        type: "LINUX",
         command: "egrep '^(NAME|VERSION)=' /etc/os-release",
         distros: ["UBUNTU", "RHEL"],
         regex: [
@@ -21,7 +21,7 @@ function osRetreivalConfig(){
         ]
     },
     {
-        type: "windows",
+        type: "WINDOWS",
         command: "powershell -command (Get-WmiObject -class Win32_OperatingSystem).Caption"
     }];
 
