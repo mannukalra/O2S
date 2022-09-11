@@ -34,10 +34,9 @@ public class WinRMConnection implements Connection{
     }
 
     @Override
-    public DeviceDto discoverOS(DeviceDto device){//TODO use json config
+    public void discoverOS(DeviceDto device){//TODO use json config
         var os = runCommand("(Get-WmiObject -class Win32_OperatingSystem).Caption");
         device.setOs(os);
-        return device;
     }
 
     @Override
@@ -49,7 +48,10 @@ public class WinRMConnection implements Connection{
         return result;
     }
     
-    
+    public void configureBasePath(DeviceDto device){
+        //implement
+    }
+
     public static void main(String[] args) {
         System.out.println(new WinRMConnection("WIN-5AQBA3PBPPH.mshome.net", "Administrator", "").runCommand("[System.Environment]::OSVersion"));
     }

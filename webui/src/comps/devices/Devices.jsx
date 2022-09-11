@@ -55,7 +55,7 @@ function Devices(props) {
                 <AddDevice 
                     label="Add Device"
                     open={addDeviceOpen}
-                    device={{envId: props.envId, host: "", protocol: "SSH", userName: "", password: ""}}
+                    device={{envId: props.envId, host: "", protocol: "SSH", user: "", password: ""}}
                     openAlert={props.openAlert}
                     handleClose={handleCloseAddDevice}/>
             }

@@ -3,6 +3,7 @@ package com.o2s.data.model;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -27,11 +28,14 @@ public class Device {
     private String host;
     private Integer port;
     private String alias;
-    private String userName;
+    
+    @Column(name="uname")
+    private String user;
     private String password;
     private String os;
     private String protocol;
     private DeviceType type;
+    private String basePath;
 
     @ManyToOne
     @JoinColumn(name="env_id", nullable=false)
@@ -65,11 +69,11 @@ public class Device {
     public void setAlias(String alias) {
         this.alias = alias;
     }
-    public String getUserName() {
-        return userName;
+    public String getUser() {
+        return user;
     }
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setUser(String user) {
+        this.user = user;
     }
     public String getPassword() {
         return password;
@@ -106,6 +110,12 @@ public class Device {
     }
     public void setType(DeviceType type) {
         this.type = type;
+    }
+    public String getBasePath() {
+        return basePath;
+    }
+    public void setBasePath(String basePath) {
+        this.basePath = basePath;
     }
     
 }

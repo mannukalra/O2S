@@ -65,7 +65,7 @@ function AddEnv(props) {
             });
             const content = await rawResponse.json();
           
-            console.log("saved env with id -"+content);
+            console.log("saved env with id- "+content);
             props.handleClose();
             props.openAlert("success", "Saved Environment Successfully!");
           })();

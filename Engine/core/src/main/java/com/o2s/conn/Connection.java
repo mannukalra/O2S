@@ -6,6 +6,8 @@ public interface Connection {
     
     String runCommand(String cmd);
 
-    DeviceDto discoverOS(DeviceDto device);
+    void discoverOS(DeviceDto device);
+
+    void configureBasePath(DeviceDto device);
 
 }

@@ -17,8 +17,8 @@ function AddDevice(props) {
             case 'protocol':
                 setDeviceLocal({ ...device, protocol: value });
                 break;
-            case 'userName':
-                setDeviceLocal({ ...device, userName: value });
+            case 'user':
+                setDeviceLocal({ ...device, user: value });
                 break;
             case 'password':
                 setDeviceLocal({ ...device, password: value });
@@ -52,7 +52,7 @@ function AddDevice(props) {
                         </td>
                     </tr>
                     <tr>
-                        <td><TextField id="outlined-username" label="User" name="userName" value={device.userName} onChange={handleChange} required /> </td>
+                        <td><TextField id="outlined-user" label="User" name="user" value={device.user} onChange={handleChange} required /> </td>
                         <td><TextField id="outlined-password" label="Password" name="password" value={device.password} onChange={handleChange} required /> </td>
                     </tr>
                 </tbody>

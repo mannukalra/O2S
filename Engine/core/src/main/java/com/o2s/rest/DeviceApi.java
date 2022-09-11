@@ -30,7 +30,9 @@ public class DeviceApi {
     public Mono<DeviceDto> addEnv(@RequestBody DeviceDto device){
         var connection = ConnectionFactory.createConnection(device);
         if(connection != null){
-            device = connection.discoverOS(device);
+            connection.discoverOS(device);
+            if(device.getType() != null)
+                connection.configureBasePath(device);
         }else{
             // error while establishing connection
         }

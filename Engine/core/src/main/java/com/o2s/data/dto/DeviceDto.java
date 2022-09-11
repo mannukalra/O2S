@@ -14,11 +14,12 @@ public class DeviceDto implements Serializable {
     private String host;
     private Integer port;
     private String alias;
-    private String userName;
+    private String user;
     private String password;
     private String os;
     private String protocol;
     private DeviceType type;
+    private String basePath;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Integer envId;

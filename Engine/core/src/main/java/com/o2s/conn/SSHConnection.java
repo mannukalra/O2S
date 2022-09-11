@@ -54,7 +54,7 @@ public class SSHConnection implements Connection {
     }
 
     @Override
-    public DeviceDto discoverOS(DeviceDto device){
+    public void discoverOS(DeviceDto device){
         String result = "";
         var osConfig = NHEngine.getOsRetreivalConfig();
         for(var conf : osConfig){
@@ -86,13 +86,11 @@ public class SSHConnection implements Connection {
                 e.printStackTrace();
                 // handle exception
             }
-            
         }
+        
         if(result.equals("") ){
             //log error
         }
-
-        return device;
     }
 
     @Override
@@ -112,29 +110,35 @@ public class SSHConnection implements Connection {
 
                     channel.connect();
                     result = CharStreams.toString(new InputStreamReader(stream, "UTF-8"));
-                    System.out.println(result);
+                    var err = CharStreams.toString(new InputStreamReader(errStream, "UTF-8"));
+                    System.out.println("RESULT:>>"+result+"<< ERR:>>"+err+"<<");
+                    if("".equals(result) && !"".equals(err))
+                        throw new RuntimeException("NonZeroExitStatus error: "+err);
                 }
             }
         }catch(JSchException | IOException e){
             e.printStackTrace(); //TODO
         }finally{
             if(channel != null){
-                // if(channel.getExitStatus() != 0) //JSCH NonZeroExitStatus error handling
-                    // throw new RuntimeException("NonZeroExitStatus");
                 channel.disconnect();
             }
         }
         return result;
     }
 
-    public void configureMonitoring(DeviceDto device){
-        //user-home path dir strucure
+    public void configureBasePath(DeviceDto device){
+        String basePath = null;
         if(device.getType() == DeviceType.LINUX){
-
-
+            var targetdir = "~"+ device.getUser() +"/"+ device.getHost() +"/o2s";
+            basePath = runCommand("mkdir -p "+targetdir+";cd "+targetdir+";pwd");
+              
         }else if(device.getType() == DeviceType.WINDOWS){
-            
+            var targetdir = "%userprofile%\\"+device.getHost()+"\\o2s";
+            basePath = runCommand("mkdir "+targetdir+" 2> NUL & cd "+targetdir+" & cd");
         }
+
+        if(basePath != null && !basePath.equals(""))
+            device.setBasePath(basePath);
     }
     
 }
