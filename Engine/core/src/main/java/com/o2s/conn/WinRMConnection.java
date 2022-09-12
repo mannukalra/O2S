@@ -56,7 +56,7 @@ public class WinRMConnection implements Connection{
 
 
     @Override
-    public void copyFile(File file, String path) {
+    public void copyFile(String sourcePath, String targetPath, boolean updatePermissions) {
         // TODO Auto-generated method stub
         
     }

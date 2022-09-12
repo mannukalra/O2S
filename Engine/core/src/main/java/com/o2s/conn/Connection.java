@@ -1,6 +1,5 @@
 package com.o2s.conn;
 
-import java.io.File;
 
 public interface Connection extends AutoCloseable {
     
@@ -8,6 +7,6 @@ public interface Connection extends AutoCloseable {
 
     String executeCommand(String cmd);
 
-    void copyFile(File file, String path);
+    void copyFile(String sourcePath, String targetPath, boolean updatePermissions);
 
 }

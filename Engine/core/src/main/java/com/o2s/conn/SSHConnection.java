@@ -5,12 +5,15 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Properties;
 
+
 import com.google.common.io.CharStreams;
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelExec;
+import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
+import com.jcraft.jsch.SftpException;
 
 public class SSHConnection implements Connection {
 
@@ -72,9 +75,20 @@ public class SSHConnection implements Connection {
     }
 
     @Override
-    public void copyFile(File file, String path) {
-        // TODO Auto-generated method stub
-        
+    public void copyFile(String sourcePath, String targetPath, boolean updatePermissions) {
+
+        ChannelSftp sftpChannel;
+        try{
+            sftpChannel = (ChannelSftp) session.openChannel("sftp");
+            sftpChannel.connect();
+            sftpChannel.put(sourcePath, targetPath);
+
+            if(updatePermissions)
+                executeCommand("chmod 774 "+targetPath);
+            
+        }catch(JSchException | SftpException ex){
+            ex.printStackTrace();//
+        }
     }
 
     @Override

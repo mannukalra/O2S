@@ -19,6 +19,7 @@ import com.google.gson.JsonSyntaxException;
 // import com.o2s.data.dto.DeviceDto;
 import com.o2s.conn.Connection;
 import com.o2s.data.dto.DeviceDto;
+import com.o2s.data.enm.DeviceType;
 
 public class NHEngine {
     //cleanup
@@ -43,8 +44,8 @@ public class NHEngine {
     }
 
 
-    public List<Map<String, Object>> discoverTypeAndValidate(Connection conn, DeviceDto device){
-        List<Map<String, Object>> config = null;
+    public String discoverTypeAndValidate(Connection conn, DeviceDto device){
+        String validationStatus = null;
 
         ScriptEngineFactory sef = new NashornScriptEngineFactory();
         ScriptEngine nashornEngine = sef.getScriptEngine();
@@ -57,14 +58,18 @@ public class NHEngine {
                 invocable.invokeFunction("validateBasePath", conn, device);
                 if(device.getBasePath() != null){
                     //TODO file creation, copy on target machine and execute to validate api access
-                    invocable.invokeFunction("validateO2SAccess", conn, device);
+                    var sourcePath = "D:/DND/VSCode/O2S/Engine/core/src/main/resources/o2s/script";
+                    var fileName = "test";
+                    var fileExtention = device.getType() == DeviceType.WINDOWS ? ".ps1" : ".sh";
+
+                    validationStatus = (String)invocable.invokeFunction("validateO2SAccess", conn, device, sourcePath, fileName+fileExtention);
                 }
             }
         } catch (ScriptException | NoSuchMethodException | FileNotFoundException | JsonSyntaxException e) {
             e.printStackTrace();
         }
 
-        return config;
+        return validationStatus;
     }
 
     // public static void main(String[] args) {

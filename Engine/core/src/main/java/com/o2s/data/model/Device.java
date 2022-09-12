@@ -16,6 +16,7 @@ import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.o2s.data.enm.DeviceType;
+import com.o2s.data.enm.Status;
 
 
 @Entity
@@ -28,6 +29,7 @@ public class Device {
     private String host;
     private Integer port;
     private String alias;
+    private Status status;
     
     @Column(name="uname")
     private String user;
@@ -68,6 +70,12 @@ public class Device {
     }
     public void setAlias(String alias) {
         this.alias = alias;
+    }
+    public Status getStatus() {
+        return status;
+    }
+    public void setStatus(Status status) {
+        this.status = status;
     }
     public String getUser() {
         return user;
