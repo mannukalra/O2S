@@ -17,10 +17,12 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 // import javax.script.Bindings;
 // import com.o2s.data.dto.DeviceDto;
+import com.o2s.conn.Connection;
+import com.o2s.data.dto.DeviceDto;
 
 public class NHEngine {
-
-    public static List<Map<String, Object>> getOsRetreivalConfig(){
+    //cleanup
+    public List<Map<String, Object>> getTypeRetreivalConfig(){
         List<Map<String, Object>> config = null;
 
         ScriptEngineFactory sef = new NashornScriptEngineFactory();
@@ -29,7 +31,7 @@ public class NHEngine {
         try {//TODO fileName as config
             nashornEngine.eval(new FileReader("D:\\DND\\VSCode\\O2S\\Engine\\core\\src\\main\\resources\\o2s\\script\\retreivalUtil.js"));
             Invocable invocable = (Invocable) nashornEngine;
-            Object configJson = invocable.invokeFunction("osRetreivalConfig");
+            Object configJson = invocable.invokeFunction("typeRetreivalConfig", false);
 
             var typeToken = new TypeToken<List<Map<String, Object>>>(){}.getType();
             config = new Gson().fromJson((String)configJson, typeToken);
@@ -40,39 +42,32 @@ public class NHEngine {
         return config;
     }
 
-    public static void main(String[] args) {
-        // ScriptEngineFactory sef = new NashornScriptEngineFactory();
-        // ScriptEngine nashornEngine = sef.getScriptEngine();
 
-        // DeviceDto deviceDto = new DeviceDto();
-        // deviceDto.setAlias("test alias");
-        // deviceDto.setHost("test host!");
-        // try {
-        //     nashornEngine.eval(new FileReader("D:\\DND\\VSCode\\O2S\\Engine\\core\\src\\main\\resources\\o2s\\script\\nh.js"));
-        //     Invocable invocable = (Invocable) nashornEngine;
-        //     Object funcResult = invocable.invokeFunction("eval", deviceDto); 
-        //     System.out.println(funcResult);
-        // } catch (ScriptException | NoSuchMethodException | FileNotFoundException e) {
-        //     e.printStackTrace();
-        // }
+    public List<Map<String, Object>> discoverTypeAndValidate(Connection conn, DeviceDto device){
+        List<Map<String, Object>> config = null;
 
+        ScriptEngineFactory sef = new NashornScriptEngineFactory();
+        ScriptEngine nashornEngine = sef.getScriptEngine();
 
+        try {//TODO fileName as config
+            nashornEngine.eval(new FileReader("D:\\DND\\VSCode\\O2S\\Engine\\core\\src\\main\\resources\\o2s\\script\\retreivalUtil.js"));
+            Invocable invocable = (Invocable) nashornEngine;
+            invocable.invokeFunction("discoverType", conn, device);
+            if(device.getType() != null){
+                invocable.invokeFunction("validateBasePath", conn, device);
+                if(device.getBasePath() != null){
+                    //TODO file creation, copy on target machine and execute to validate api access
+                    invocable.invokeFunction("validateO2SAccess", conn, device);
+                }
+            }
+        } catch (ScriptException | NoSuchMethodException | FileNotFoundException | JsonSyntaxException e) {
+            e.printStackTrace();
+        }
 
-        // try{
-        //     Bindings bindings = nashornEngine.createBindings();
-        //     bindings.put("count", 3);
-        //     bindings.put("name", "baeldung");    
-        //     String script = "var greeting='Hello ';" +
-        //         "for(var i=count;i>0;i--) { " +
-        //             "greeting+=name + ' '" +
-        //         "}" + "greeting";
-            
-        //     Object bindingsResult = nashornEngine.eval(script, bindings);
-        //     System.out.println(bindingsResult);
-        // } catch (ScriptException e) {
-        //     e.printStackTrace();
-        // }
-
-        System.out.println(getOsRetreivalConfig());
+        return config;
     }
+
+    // public static void main(String[] args) {
+    //     System.out.println(new NHEngine().getTypeRetreivalConfig());
+    // }
 }

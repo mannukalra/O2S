@@ -1,6 +1,5 @@
 package com.o2s.rest;
 
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,10 +10,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.o2s.conn.ConnectionFactory;
-import com.o2s.conn.SSHConnection;
-import com.o2s.conn.WinRMConnection;
 import com.o2s.data.dto.DeviceDto;
 import com.o2s.svc.DeviceSvc;
+import com.o2s.util.nashorn.NHEngine;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -27,17 +25,16 @@ public class DeviceApi {
     DeviceSvc deviceSvc;
 
     @PostMapping(path = "/retrieve")
-    public Mono<DeviceDto> addEnv(@RequestBody DeviceDto device){
-        var connection = ConnectionFactory.createConnection(device);
-        if(connection != null){
-            connection.discoverOS(device);
-            if(device.getType() != null)
-                connection.configureBasePath(device);
-        }else{
-            // error while establishing connection
+    public Mono<DeviceDto> retrieveDevice(@RequestBody DeviceDto device){
+        try(var connection = ConnectionFactory.createConnection(device);){
+            if(connection != null){
+                new NHEngine().discoverTypeAndValidate(connection, device);
+            }else{
+                // error while establishing connection
+            }
+        }catch(Exception ex){
+            ex.printStackTrace();//
         }
-
-        //TODO identify deploypath and create dir structure and add to props
         return Mono.just(device).log();
     }
     

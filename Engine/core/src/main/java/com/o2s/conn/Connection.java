@@ -1,13 +1,13 @@
 package com.o2s.conn;
 
-import com.o2s.data.dto.DeviceDto;
+import java.io.File;
 
-public interface Connection {
+public interface Connection extends AutoCloseable {
     
-    String runCommand(String cmd);
+    void runCommand(String cmd);
 
-    void discoverOS(DeviceDto device);
+    String executeCommand(String cmd);
 
-    void configureBasePath(DeviceDto device);
+    void copyFile(File file, String path);
 
 }
