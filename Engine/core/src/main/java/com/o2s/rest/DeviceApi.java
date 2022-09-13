@@ -27,17 +27,17 @@ public class DeviceApi {
 
     @PostMapping(path = "/retrieve")
     public Mono<DeviceDto> retrieveDevice(@RequestBody DeviceDto device){
-        String validationStatus = null;
+        String validationResult = null;
         try(var connection = ConnectionFactory.createConnection(device);){
             if(connection != null){
-                validationStatus = new NHEngine().discoverTypeAndValidate(connection, device);
+                validationResult = new NHEngine().discoverTypeAndValidate(connection, device);
             }else{
                 // error while establishing connection
             }
         }catch(Exception ex){
             ex.printStackTrace();//
         }
-        if("success".equals(validationStatus))
+        if(validationResult != null && validationResult.contains("successo2s"))
             device.setStatus(Status.HEALTHY);
 
         return Mono.just(device).log();

@@ -1,35 +1,14 @@
-#[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-#[System.Net.ServicePointManager]::ServerCertificateValidationCallback = {$true}
-
-if (-not ([System.Management.Automation.PSTypeName]'ServerCertificateValidationCallback').Type){
-$certCallback = @"
-    using System;
+add-type @"
     using System.Net;
-    using System.Net.Security;
     using System.Security.Cryptography.X509Certificates;
-    public class ServerCertificateValidationCallback
-    {
-        public static void Ignore()
-        {
-            if(ServicePointManager.ServerCertificateValidationCallback ==null)
-            {
-                ServicePointManager.ServerCertificateValidationCallback += 
-                    delegate
-                    (
-                        Object obj, 
-                        X509Certificate certificate, 
-                        X509Chain chain, 
-                        SslPolicyErrors errors
-                    )
-                    {
-                        return true;
-                    };
-            }
+    public class TrustAllCertsPolicy : ICertificatePolicy {
+        public bool CheckValidationResult(
+            ServicePoint srvPoint, X509Certificate certificate,
+            WebRequest request, int certificateProblem) {
+            return true;
         }
     }
 "@
-    Add-Type $certCallback
-}
-[ServerCertificateValidationCallback]::Ignore()
-
+[System.Net.ServicePointManager]::CertificatePolicy = New-Object TrustAllCertsPolicy
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 Invoke-WebRequest -UseBasicParsing https://192.168.1.36:8443/monitor/test/TESTHOST

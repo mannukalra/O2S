@@ -45,7 +45,7 @@ public class NHEngine {
 
 
     public String discoverTypeAndValidate(Connection conn, DeviceDto device){
-        String validationStatus = null;
+        String validationResult = null;
 
         ScriptEngineFactory sef = new NashornScriptEngineFactory();
         ScriptEngine nashornEngine = sef.getScriptEngine();
@@ -57,19 +57,19 @@ public class NHEngine {
             if(device.getType() != null){
                 invocable.invokeFunction("validateBasePath", conn, device);
                 if(device.getBasePath() != null){
-                    //TODO file creation, copy on target machine and execute to validate api access
+                    // copy script on target machine and execute to validate api access
                     var sourcePath = "D:/DND/VSCode/O2S/Engine/core/src/main/resources/o2s/script";
                     var fileName = "test";
                     var fileExtention = device.getType() == DeviceType.WINDOWS ? ".ps1" : ".sh";
 
-                    validationStatus = (String)invocable.invokeFunction("validateO2SAccess", conn, device, sourcePath, fileName+fileExtention);
+                    validationResult = (String)invocable.invokeFunction("validateO2SAccess", conn, device, sourcePath, fileName+fileExtention);
                 }
             }
         } catch (ScriptException | NoSuchMethodException | FileNotFoundException | JsonSyntaxException e) {
             e.printStackTrace();
         }
 
-        return validationStatus;
+        return validationResult;
     }
 
     // public static void main(String[] args) {

@@ -80,24 +80,13 @@ function validateBasePath(conn, device){
 
 function validateO2SAccess(conn, device, sourcePath, fileName){
     var targetFilePath = device.getBasePath()+"/"+fileName;
-    var changePermissions = true;
-    var executeCmd = ". ";
-    var deleteCmd = "rm " + targetFilePath;
-    var pathPrefix = "";
-    if(device.type == com.o2s.data.enm.DeviceType.WINDOWS){
-        pathPrefix = "/";
-        targetFilePath = targetFilePath.replace(/\\/g, "/");
-        changePermissions = false;
-        executeCmd = "powershell -File ";
-        deleteCmd = "del "+device.getBasePath()+"\\"+fileName;
-    }
-    conn.copyFile(sourcePath+"/"+fileName, pathPrefix + targetFilePath, changePermissions);
-    var status="";
+    conn.copyFile(sourcePath+"/"+fileName, targetFilePath, device.getType());
+    var result="";
     try{
-        status = conn.executeCommand(executeCmd + targetFilePath);
-        print("status>>>>>>>>>>>>>>>>>>>>>>>>"+status);
+        result = conn.executeScript(targetFilePath, device.getType());
+        print("result  >>>>>>>>>>> "+result);
     }catch(ex){print(ex.message);}
 
-    conn.executeCommand(deleteCmd);
-    return status;
+    conn.deleteFile(targetFilePath, device.getType());
+    return result;
 }

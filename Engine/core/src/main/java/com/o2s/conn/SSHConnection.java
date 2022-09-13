@@ -1,6 +1,5 @@
 package com.o2s.conn;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Properties;
@@ -14,6 +13,7 @@ import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpException;
+import com.o2s.data.enm.DeviceType;
 
 public class SSHConnection implements Connection {
 
@@ -42,7 +42,7 @@ public class SSHConnection implements Connection {
     }
 
     @Override
-    public String executeCommand(String cmd) {
+    public String executeCommand(String cmd) throws NonZeroExitStatusException{
         String result = null;
         Channel channel = null;
 
@@ -61,7 +61,7 @@ public class SSHConnection implements Connection {
                     var err = CharStreams.toString(new InputStreamReader(errStream, "UTF-8"));
                     System.out.println("RESULT:>>"+result+"<< ERR:>>"+err+"<<");
                     if("".equals(result) && !"".equals(err))
-                        throw new RuntimeException("NonZeroExitStatus error: "+err);
+                        throw new NonZeroExitStatusException("NonZeroExitStatus error: "+err);
                 }
             }
         }catch(JSchException | IOException e){
@@ -75,8 +75,13 @@ public class SSHConnection implements Connection {
     }
 
     @Override
-    public void copyFile(String sourcePath, String targetPath, boolean updatePermissions) {
-
+    public void copyFile(String sourcePath, String targetPath, DeviceType type) {
+        
+        var updatePermissions = true;
+        if(type == DeviceType.WINDOWS){
+            updatePermissions = false;
+            targetPath = "/"+(targetPath.replace("\\", "/"));
+        }
         ChannelSftp sftpChannel;
         try{
             sftpChannel = (ChannelSftp) session.openChannel("sftp");
@@ -86,9 +91,39 @@ public class SSHConnection implements Connection {
             if(updatePermissions)
                 executeCommand("chmod 774 "+targetPath);
             
-        }catch(JSchException | SftpException ex){
+        }catch(JSchException | SftpException | NonZeroExitStatusException ex){
             ex.printStackTrace();//
         }
+    }
+
+    @Override
+    public String executeScript(String path, DeviceType type) throws NonZeroExitStatusException{
+        String result = null;
+        var executeCmd = ". ";
+        if(type == DeviceType.WINDOWS){
+            executeCmd = "powershell -File ";
+            path = path.replace("/", "\\");
+        }
+        result = executeCommand(executeCmd + path);
+        return result;
+    }
+
+    @Override
+    public boolean deleteFile(String path, DeviceType type){
+        boolean deleted = false;
+
+        var deleteCmd = "rm " + path;
+        if(type == DeviceType.WINDOWS){
+            deleteCmd = "del "+(path.replace("/", "\\"));
+        }
+        try{
+            executeCommand(deleteCmd);
+            deleted = false;
+        }catch(Exception ex){
+            System.out.println("Failed to delete file, error- "+ex.getMessage());
+        }
+
+        return deleted;
     }
 
     @Override

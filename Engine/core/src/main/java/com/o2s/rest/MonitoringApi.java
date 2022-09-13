@@ -14,7 +14,7 @@ public class MonitoringApi {
 
     @GetMapping(value = "/test/{host}")
     public Mono<String> validateO2SAccess(@PathVariable("host") String host) {
-        return Mono.just("success").log();
+        return Mono.just("successo2s").log();
     }
     
 }
