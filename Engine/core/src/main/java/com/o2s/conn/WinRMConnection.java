@@ -1,6 +1,11 @@
 package com.o2s.conn;
 
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 import org.apache.http.client.config.AuthSchemes;
 
 import com.o2s.data.enm.DeviceType;
@@ -55,8 +60,29 @@ public class WinRMConnection implements Connection{
     @Override
     public void copyFile(String sourcePath, String targetPath, DeviceType type) {
         
-        targetPath = "/"+(targetPath.replace("\\", "/"));
-        // Copy file command
+        targetPath = (targetPath.replace("\\", "/"));
+        
+        Path path = Paths.get(sourcePath);
+        String content = null;
+        String errorMsg = null;
+        try {
+            content = Files.readString(path);
+            content = content.replace("'", "''");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        var winRmResponse = tool.executePs("New-Item -Path '"+targetPath+"' -ItemType File -Force");
+        if(winRmResponse.getStatusCode() == 0){
+            winRmResponse = tool.executePs("Set-Content '"+targetPath+"' -Value ([System.Text.Encoding]::UTF8.GetBytes('"+content+"')) -Encoding Byte");
+            if(winRmResponse.getStatusCode() != 0)
+                errorMsg = "Failed to copy script content to the specified target file :- "+targetPath;
+        }else{
+            errorMsg = "Failed to create the file on specified target path :- "+targetPath;
+        }
+
+        if(errorMsg != null){//logger err
+            System.out.println(errorMsg +" Error :- "+ winRmResponse.getStdErr());
+        }
     }
 
     @Override
@@ -65,7 +91,7 @@ public class WinRMConnection implements Connection{
         var executeCmd = "powershell -File ";
         path = path.replace("/", "\\");
         
-        result = executeCommand(executeCmd + path);
+        result = executeCommand(executeCmd +"\""+ path +"\"");
         return result;
     }
 
