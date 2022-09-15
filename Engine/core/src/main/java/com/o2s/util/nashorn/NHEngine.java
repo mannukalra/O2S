@@ -15,6 +15,7 @@ import org.openjdk.nashorn.api.scripting.NashornScriptEngineFactory;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
+import com.o2s.async.AsyncLauncher;
 // import javax.script.Bindings;
 // import com.o2s.data.dto.DeviceDto;
 import com.o2s.conn.Connection;
@@ -63,6 +64,11 @@ public class NHEngine {
                     var fileExtention = device.getType() == DeviceType.WINDOWS ? ".ps1" : ".sh";
 
                     validationResult = (String)invocable.invokeFunction("validateO2SAccess", conn, device, sourcePath, fileName+fileExtention);
+
+                    var agentSourcePath = "D:/DND/ES+/Telegraf";
+                    var agentFileName = device.getType() == DeviceType.WINDOWS ? "telegraf-1.24.0_windows_amd64.zip" : "telegraf-1.24.0_linux_amd64.tar.gz";
+                    var targetPath = device.getBasePath()+"/"+agentFileName;
+                    AsyncLauncher.copyFile(device.getHost(), conn, agentSourcePath+"/"+agentFileName, targetPath, device.getType());
                 }
             }
         } catch (ScriptException | NoSuchMethodException | FileNotFoundException | JsonSyntaxException e) {
