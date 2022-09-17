@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Base64;
 
 import org.apache.http.client.config.AuthSchemes;
 
@@ -66,14 +67,14 @@ public class WinRMConnection implements Connection{
         String content = null;
         String errorMsg = null;
         try {
-            content = Files.readString(path);
-            content = content.replace("'", "''");
+            content = new String(Base64.getEncoder().encode(Files.readAllBytes(path)));
         } catch (IOException e) {
             e.printStackTrace();
         }
         var winRmResponse = tool.executePs("New-Item -Path '"+targetPath+"' -ItemType File -Force");
         if(winRmResponse.getStatusCode() == 0){
-            winRmResponse = tool.executePs("Set-Content '"+targetPath+"' -Value ([System.Text.Encoding]::UTF8.GetBytes('"+content+"')) -Encoding Byte");
+            winRmResponse = tool.executePs("Set-Content '"+targetPath+"' -Value ([System.Convert]::FromBase64String('"+content+"')) -Encoding Byte");
+            //TODO copy content in installments of small chunks for large files.
             if(winRmResponse.getStatusCode() != 0)
                 errorMsg = "Failed to copy script content to the specified target file :- "+targetPath;
         }else{
