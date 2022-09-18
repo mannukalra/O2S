@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.o2s.conn.ConnectionFactory;
 import com.o2s.data.dto.DeviceDto;
 import com.o2s.data.enm.Status;
+import com.o2s.svc.AsyncLauncherSvc;
 import com.o2s.svc.DeviceSvc;
 import com.o2s.util.nashorn.NHEngine;
 
@@ -25,12 +26,15 @@ public class DeviceApi {
     @Autowired
     DeviceSvc deviceSvc;
 
+    @Autowired
+    AsyncLauncherSvc asyncLauncher;
+
     @PostMapping(path = "/retrieve")
     public Mono<DeviceDto> retrieveDevice(@RequestBody DeviceDto device){
         String validationResult = null;
         try(var connection = ConnectionFactory.createConnection(device);){
             if(connection != null){
-                validationResult = new NHEngine().discoverTypeAndValidate(connection, device);
+                validationResult = new NHEngine().discoverTypeAndValidate(connection, device, asyncLauncher);
             }else{
                 // error while establishing connection
             }

@@ -1,4 +1,4 @@
-package com.o2s.async;
+package com.o2s.svc;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -8,17 +8,19 @@ import java.util.concurrent.Future;
 
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.stereotype.Service;
 
 import com.o2s.conn.Connection;
 import com.o2s.data.enm.DeviceType;
 
-public class AsyncLauncher {
+@Service
+public class AsyncLauncherSvc {
 
     static Map<String, Boolean> hostCopyStatus = new HashMap<>();
 
     private ThreadPoolTaskExecutor taskExecutor;
 
-    public AsyncLauncher(ThreadPoolTaskExecutor taskExecutor) {
+    public AsyncLauncherSvc(ThreadPoolTaskExecutor taskExecutor) {
         this.taskExecutor = taskExecutor;
     }
 
@@ -35,11 +37,12 @@ public class AsyncLauncher {
     }
 
     @Async("taskExecutor")
-    public static void copyFile(String host, Connection conn, String sourcePath, String targetPath, DeviceType type){
+    public void copyFile(String host, Connection conn, String sourcePath, String targetPath, DeviceType type){
         var done = false;
         try{
             System.out.println(">>>>>>>>>>>>>>>>>>>>>   hostCopyStatus >>>>>>>>>>>>>>>>>>>"+hostCopyStatus);
             conn.copyFile(sourcePath, targetPath, type);
+            System.out.println(Thread.currentThread().getId()+" *********************************************** "+Thread.currentThread().getName());
             done = true;
         }catch(Exception e){
             done = false;

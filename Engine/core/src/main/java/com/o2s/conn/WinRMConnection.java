@@ -1,10 +1,13 @@
 package com.o2s.conn;
 
 
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.Base64;
 
 import org.apache.http.client.config.AuthSchemes;
@@ -65,18 +68,40 @@ public class WinRMConnection implements Connection{
         
         Path path = Paths.get(sourcePath);
         String content = null;
-        String errorMsg = null;
-        try {
-            content = new String(Base64.getEncoder().encode(Files.readAllBytes(path)));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        String errorMsg = null;            
+        
         var winRmResponse = tool.executePs("New-Item -Path '"+targetPath+"' -ItemType File -Force");
         if(winRmResponse.getStatusCode() == 0){
-            winRmResponse = tool.executePs("Set-Content '"+targetPath+"' -Value ([System.Convert]::FromBase64String('"+content+"')) -Encoding Byte");
-            //TODO copy content in installments of small chunks for large files.
-            if(winRmResponse.getStatusCode() != 0)
-                errorMsg = "Failed to copy script content to the specified target file :- "+targetPath;
+            InputStream inputStream = null;
+            try{
+                long size = Files.size(path);
+                final int BUFFER_SIZE = 4096; // 4KB
+                if(size > BUFFER_SIZE){
+                    inputStream = new FileInputStream(sourcePath);
+                    byte[] buffer = new byte[BUFFER_SIZE];
+                    int bytesRead = -1;
+                    while ((bytesRead = inputStream.read(buffer)) != -1) {
+                        if(bytesRead < BUFFER_SIZE)
+                            buffer = Arrays.copyOf(buffer, bytesRead);
+                        
+                        content = new String(Base64.getEncoder().encode(buffer));
+                        tool.executeCommand("powershell -Command \"Add-Content '"+targetPath+"' -Value ([System.Convert]::FromBase64String('"+content+"')) -Encoding Byte\"");
+                    }
+                }else{
+                    content = new String(Base64.getEncoder().encode(Files.readAllBytes(path)));
+                    winRmResponse = tool.executePs("Set-Content '"+targetPath+"' -Value ([System.Convert]::FromBase64String('"+content+"')) -Encoding Byte");
+                    if(winRmResponse.getStatusCode() != 0)
+                        errorMsg = "Failed to copy script content to the specified target file :- "+targetPath;
+                }
+            } catch (IOException e) {
+                errorMsg = "Failed to copy script content to the specified target file :- "+targetPath+", error:- "+e.getMessage();
+            } finally{
+                if(inputStream != null){
+                    try {
+                        inputStream.close();   
+                    } catch (Exception e) { }
+                }
+            }
         }else{
             errorMsg = "Failed to create the file on specified target path :- "+targetPath;
         }

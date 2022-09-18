@@ -15,12 +15,12 @@ import org.openjdk.nashorn.api.scripting.NashornScriptEngineFactory;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
-import com.o2s.async.AsyncLauncher;
 // import javax.script.Bindings;
 // import com.o2s.data.dto.DeviceDto;
 import com.o2s.conn.Connection;
 import com.o2s.data.dto.DeviceDto;
 import com.o2s.data.enm.DeviceType;
+import com.o2s.svc.AsyncLauncherSvc;
 
 public class NHEngine {
     //cleanup
@@ -45,7 +45,7 @@ public class NHEngine {
     }
 
 
-    public String discoverTypeAndValidate(Connection conn, DeviceDto device){
+    public String discoverTypeAndValidate(Connection conn, DeviceDto device, AsyncLauncherSvc asyncLauncher){
         String validationResult = null;
 
         ScriptEngineFactory sef = new NashornScriptEngineFactory();
@@ -68,7 +68,8 @@ public class NHEngine {
                     var agentSourcePath = "D:/DND/ES+/Telegraf";
                     var agentFileName = device.getType() == DeviceType.WINDOWS ? "telegraf-1.24.0_windows_amd64.zip" : "telegraf-1.24.0_linux_amd64.tar.gz";
                     var targetPath = device.getBasePath()+"/"+agentFileName;
-                    AsyncLauncher.copyFile(device.getHost(), conn, agentSourcePath+"/"+agentFileName, targetPath, device.getType());
+                    asyncLauncher.copyFile(device.getHost(), conn, agentSourcePath+"/"+agentFileName, targetPath, device.getType());
+                    System.out.println(Thread.currentThread().getId()+" *********************************************** "+Thread.currentThread().getName());
                 }
             }
         } catch (ScriptException | NoSuchMethodException | FileNotFoundException | JsonSyntaxException e) {
