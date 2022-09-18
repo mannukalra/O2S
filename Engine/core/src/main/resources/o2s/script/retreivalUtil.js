@@ -63,13 +63,14 @@ function discoverType(connection, device){
 function validateBasePath(conn, device){
     var basePath = null;
     if(device.getType() == com.o2s.data.enm.DeviceType.LINUX){
-        var targetdir = "~"+ device.getUser() +"/"+ device.getHost() +"/o2s";
-        basePath = conn.executeCommand("mkdir -p "+targetdir+";cd "+targetdir+";pwd");
-          
+        var targetdir = "~"+ device.getUser() +"/"+ device.getHost() +"/o2s";          
     }else if(device.getType() == com.o2s.data.enm.DeviceType.WINDOWS){
         var targetdir = "%userprofile%\\"+device.getHost()+"\\o2s";
-        basePath = conn.executeCommand("mkdir "+targetdir+" 2> NUL & cd "+targetdir+" & cd");
     }
+
+    try{
+        basePath = conn.mkDir(targetdir, device.getType());
+    }catch(ex){print(ex.message);}
 
     if(basePath){
         device.setBasePath(basePath);

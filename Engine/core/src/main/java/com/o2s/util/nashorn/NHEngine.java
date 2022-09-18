@@ -65,11 +65,7 @@ public class NHEngine {
 
                     validationResult = (String)invocable.invokeFunction("validateO2SAccess", conn, device, sourcePath, fileName+fileExtention);
 
-                    var agentSourcePath = "D:/DND/ES+/Telegraf";
-                    var agentFileName = device.getType() == DeviceType.WINDOWS ? "telegraf-1.24.0_windows_amd64.zip" : "telegraf-1.24.0_linux_amd64.tar.gz";
-                    var targetPath = device.getBasePath()+"/"+agentFileName;
-                    asyncLauncher.copyFile(device.getHost(), conn, agentSourcePath+"/"+agentFileName, targetPath, device.getType());
-                    System.out.println(Thread.currentThread().getId()+" *********************************************** "+Thread.currentThread().getName());
+                    asyncLauncher.copyAndExtractFile(device, conn);
                 }
             }
         } catch (ScriptException | NoSuchMethodException | FileNotFoundException | JsonSyntaxException e) {

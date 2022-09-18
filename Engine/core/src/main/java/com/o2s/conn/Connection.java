@@ -14,4 +14,8 @@ public interface Connection extends AutoCloseable {
 
     boolean deleteFile(String path, DeviceType type);
 
+    String mkDir(String targetDir, DeviceType type) throws NonZeroExitStatusException;
+
+    boolean extractFile(String basePath, String fleName, String targetFolder, DeviceType type);
+
 }

@@ -1,22 +1,24 @@
 package com.o2s.svc;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.o2s.conn.Connection;
-import com.o2s.data.enm.DeviceType;
+import com.o2s.data.dto.DeviceDto;
+import com.o2s.util.Consts;
 
 @Service
 public class AsyncLauncherSvc {
 
-    static Map<String, Boolean> hostCopyStatus = new HashMap<>();
+    static Cache<String, Boolean> agentCopyStatus = CacheBuilder.newBuilder().expireAfterAccess(5, TimeUnit.MINUTES).build();
 
     private ThreadPoolTaskExecutor taskExecutor;
 
@@ -37,18 +39,21 @@ public class AsyncLauncherSvc {
     }
 
     @Async("taskExecutor")
-    public void copyFile(String host, Connection conn, String sourcePath, String targetPath, DeviceType type){
+    public void copyAndExtractFile(DeviceDto device, Connection conn){
         var done = false;
         try{
-            System.out.println(">>>>>>>>>>>>>>>>>>>>>   hostCopyStatus >>>>>>>>>>>>>>>>>>>"+hostCopyStatus);
-            conn.copyFile(sourcePath, targetPath, type);
-            System.out.println(Thread.currentThread().getId()+" *********************************************** "+Thread.currentThread().getName());
+            var agentFileName = Consts.getAgentFileName(device.getType());
+            var agentSourcePath = Consts.AGENT_FILE_SOURCE_PATH;
+            var targetPath = device.getBasePath()+"/"+agentFileName;
+            
+            conn.copyFile(agentSourcePath+"/"+agentFileName, targetPath, device.getType());
+
+            conn.extractFile(device.getBasePath(), agentFileName, Consts.AGENT_TARGET_FOLDER, device.getType());
             done = true;
         }catch(Exception e){
             done = false;
         }
-        hostCopyStatus.put(host, done);
-        System.out.println(">>>>>>>>>>>>>>>>>>>>>   hostCopyStatus >>>>>>>>>>>>>>>>>>>"+hostCopyStatus);
+        agentCopyStatus.put(device.getHost(), done);
     }
 
 }

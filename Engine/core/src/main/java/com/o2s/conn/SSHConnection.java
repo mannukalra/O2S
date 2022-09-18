@@ -18,10 +18,10 @@ import com.o2s.data.enm.DeviceType;
 public class SSHConnection implements Connection {
 
     Session session;
-    
 
+    
     public SSHConnection(String host, String user, String password) {
-        var config = new Properties(); 
+        var config = new Properties();
         config.put("StrictHostKeyChecking", "no");
         try {
             this.session = (new JSch()).getSession(user, host, 22);
@@ -127,9 +127,44 @@ public class SSHConnection implements Connection {
     }
 
     @Override
+    public String mkDir(String targetDir, DeviceType type) throws NonZeroExitStatusException{
+        String result = null;
+        if(type == com.o2s.data.enm.DeviceType.LINUX){
+            result = executeCommand("mkdir -p "+targetDir+";cd "+targetDir+";pwd");    
+        }else if(type == com.o2s.data.enm.DeviceType.WINDOWS){
+            result = executeCommand("mkdir "+targetDir+" 2> NUL & cd "+targetDir+" & cd");
+        }
+
+        return result;
+    }
+
+    @Override
+    public boolean extractFile(String basePath, String fileName, String targetFolder, DeviceType type) {
+        var separator = type == DeviceType.WINDOWS ? "\\" : "/";
+        var zipFile = basePath + separator + fileName;
+        var outPath = basePath + separator + targetFolder;
+
+        try {
+            mkDir(outPath, type);
+
+            var command = "tar -xf "+ zipFile +" -C "+ outPath;
+            if(type == DeviceType.WINDOWS){
+                //TODO 01
+                command = "[System.IO.Compression.ZipFile]::ExtractToDirectory("+zipFile+", "+outPath+")";
+            }
+            var result = executeCommand(command);
+            System.out.println("extraction status -"+result);
+        } catch (Exception e) {
+            return false;
+        }       
+
+        return false;
+    }
+    
+    @Override
     public void close() throws Exception {
         if(session != null && session.isConnected())
             session.disconnect();
     }
-    
+
 }

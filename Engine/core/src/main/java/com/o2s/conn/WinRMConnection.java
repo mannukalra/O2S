@@ -136,6 +136,18 @@ public class WinRMConnection implements Connection{
     }
 
     @Override
+    public String mkDir(String targetDir, DeviceType type) throws NonZeroExitStatusException{
+        return executeCommand("mkdir "+targetDir+" 2> NUL & cd "+targetDir+" & cd");
+    }
+
+
+    @Override
+    public boolean extractFile(String basePath, String fleName, String targetFolder, DeviceType type){
+        //TODO 01
+        return false;
+    }
+   
+    @Override
     public void close() throws Exception {
         if(context != null){
             context.shutdown();
