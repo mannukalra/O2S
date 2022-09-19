@@ -1,4 +1,4 @@
-package main
+package tgplugins
 
 import (
 	"fmt"
@@ -8,10 +8,10 @@ import (
 	"strings"
 )
 
-func main() {
+func InputPlugins() map[string]string {
 
 	inputs := make(map[string]string)
-	content, err := ioutil.ReadFile("../../static/telegraf.conf")
+	content, err := ioutil.ReadFile("../static/telegraf.conf")
 
 	if err != nil {
 		log.Fatal(err)
@@ -33,4 +33,5 @@ func main() {
 
 	// keys := reflect.ValueOf(inputs).MapKeys()
 	// fmt.Println(keys)
+	return inputs
 }
