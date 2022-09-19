@@ -1,5 +1,6 @@
 package com.o2s.conn;
 
+import com.o2s.conn.ex.NonZeroExitStatusException;
 import com.o2s.data.enm.DeviceType;
 
 public interface Connection extends AutoCloseable {

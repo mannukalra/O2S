@@ -18,6 +18,7 @@ import com.google.gson.JsonSyntaxException;
 // import javax.script.Bindings;
 // import com.o2s.data.dto.DeviceDto;
 import com.o2s.conn.Connection;
+import com.o2s.conn.ex.NonZeroExitStatusException;
 import com.o2s.data.dto.DeviceDto;
 import com.o2s.data.enm.DeviceType;
 import com.o2s.svc.AsyncLauncherSvc;
@@ -45,7 +46,7 @@ public class NHEngine {
     }
 
 
-    public String discoverTypeAndValidate(Connection conn, DeviceDto device, AsyncLauncherSvc asyncLauncher){
+    public String discoverTypeAndValidate(Connection conn, DeviceDto device, AsyncLauncherSvc asyncLauncher) throws NonZeroExitStatusException{
         String validationResult = null;
 
         ScriptEngineFactory sef = new NashornScriptEngineFactory();
@@ -65,11 +66,12 @@ public class NHEngine {
 
                     validationResult = (String)invocable.invokeFunction("validateO2SAccess", conn, device, sourcePath, fileName+fileExtention);
 
-                    asyncLauncher.copyAndExtractFile(device, conn);
+                    asyncLauncher.copyAndExtractFile(device);
                 }
             }
         } catch (ScriptException | NoSuchMethodException | FileNotFoundException | JsonSyntaxException e) {
             e.printStackTrace();
+            throw new NonZeroExitStatusException(e.getMessage());
         }
 
         return validationResult;

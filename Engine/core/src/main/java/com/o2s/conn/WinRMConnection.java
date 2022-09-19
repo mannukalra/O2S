@@ -12,6 +12,7 @@ import java.util.Base64;
 
 import org.apache.http.client.config.AuthSchemes;
 
+import com.o2s.conn.ex.NonZeroExitStatusException;
 import com.o2s.data.enm.DeviceType;
 
 import io.cloudsoft.winrm4j.client.WinRmClientContext;
@@ -142,9 +143,26 @@ public class WinRMConnection implements Connection{
 
 
     @Override
-    public boolean extractFile(String basePath, String fleName, String targetFolder, DeviceType type){
-        //TODO 01
-        return false;
+    public boolean extractFile(String basePath, String fileName, String targetFolder, DeviceType type){
+        var separator = "\\";
+        var zipFile = basePath + separator + fileName;
+        var outPath = basePath + separator + targetFolder;
+        var extractCmd = "powershell -Command \"Add-Type -assembly \'system.io.compression.filesystem\';[IO.Compression.ZipFile]::ExtractToDirectory('"+zipFile+"', '"+basePath+"'\")";
+        var renameCmd = "move ";
+        var deleteCmd = "del " + zipFile;
+        var cmdSeparator = " & ";
+        var rmDirCmd = "rmdir /Q /S "+outPath;
+        
+        try {
+            var result = executeCommand(rmDirCmd + cmdSeparator + extractCmd);
+            System.out.println("extraction succeeded! "+result);
+            result = executeCommand(deleteCmd + cmdSeparator + renameCmd + outPath+"-* "+outPath);
+
+        } catch (Exception e) {
+            return false;
+        }       
+
+        return true;
     }
    
     @Override

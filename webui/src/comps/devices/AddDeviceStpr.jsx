@@ -47,11 +47,15 @@ export default function AddDeviceStpr(props) {
             body: JSON.stringify(device)
             });
             const content = await rawResponse.json();
-        
-            console.log("Retieved device with result -"+content.os);
-            setDevice({ ...device, os: content.os, alias: "", type: content.type, basePath: content.basePath, status: content.status });
+            if(content.status == "error"){
+                console.error("Retieval failed -"+content.message);
+                alert("Retieval failed -"+content.message);
+            }else{
+                console.log("Retieved device with result -"+content.os);
+                setDevice({ ...device, os: content.dto.os, alias: "", type: content.dto.type, basePath: content.dto.basePath, status: content.dto.status });
+                setActiveStep(1);
+            }
             setLoading(false);
-            setActiveStep(1);
         })();
     };
 

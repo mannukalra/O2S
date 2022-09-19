@@ -10,7 +10,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.o2s.conn.ConnectionFactory;
+import com.o2s.conn.ex.AuthFailException;
+import com.o2s.conn.ex.NonZeroExitStatusException;
 import com.o2s.data.dto.DeviceDto;
+import com.o2s.data.dto.Response;
 import com.o2s.data.enm.Status;
 import com.o2s.svc.AsyncLauncherSvc;
 import com.o2s.svc.DeviceSvc;
@@ -30,7 +33,8 @@ public class DeviceApi {
     AsyncLauncherSvc asyncLauncher;
 
     @PostMapping(path = "/retrieve")
-    public Mono<DeviceDto> retrieveDevice(@RequestBody DeviceDto device){
+    public Mono<Response> retrieveDevice(@RequestBody DeviceDto device){
+        var response = new Response("success", "", device);
         String validationResult = null;
         try(var connection = ConnectionFactory.createConnection(device);){
             if(connection != null){
@@ -38,13 +42,18 @@ public class DeviceApi {
             }else{
                 // error while establishing connection
             }
+        }catch(AuthFailException | NonZeroExitStatusException ex){
+            response.setStatus("error");
+            response.setMessage("Error while establishing connection, "+ex.getMessage());
         }catch(Exception ex){
-            ex.printStackTrace();//
+            response.setStatus("error");
+            response.setMessage("Error while establishing connection, "+ex.getMessage());
         }
         if(validationResult != null && validationResult.contains("successo2s"))
             device.setStatus(Status.HEALTHY);
 
-        return Mono.just(device).log();
+        
+        return Mono.just(response).log();
     }
     
     @GetMapping(value = "/devices/{envId}")

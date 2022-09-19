@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import com.o2s.conn.Connection;
+import com.o2s.conn.ConnectionFactory;
 import com.o2s.data.dto.DeviceDto;
 import com.o2s.util.Consts;
 
@@ -39,9 +39,9 @@ public class AsyncLauncherSvc {
     }
 
     @Async("taskExecutor")
-    public void copyAndExtractFile(DeviceDto device, Connection conn){
+    public void copyAndExtractFile(DeviceDto device){
         var done = false;
-        try{
+        try(var conn = ConnectionFactory.createConnection(device);){
             var agentFileName = Consts.getAgentFileName(device.getType());
             var agentSourcePath = Consts.AGENT_FILE_SOURCE_PATH;
             var targetPath = device.getBasePath()+"/"+agentFileName;

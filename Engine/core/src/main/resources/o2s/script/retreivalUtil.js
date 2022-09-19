@@ -52,6 +52,8 @@ function discoverType(connection, device){
             }
         } catch (ex) {
             print("Failed to execute command: "+conf["command"]+", Error details:", ex.message);
+            if(ex.message.indexOf("Auth fail") !== -1 || ex.message.indexOf("Invalid credentials") !== -1)
+                throw new com.o2s.conn.ex.AuthFailException(ex.message);
         }
     }
     

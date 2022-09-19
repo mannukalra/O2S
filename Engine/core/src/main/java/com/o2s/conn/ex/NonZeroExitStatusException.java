@@ -1,4 +1,4 @@
-package com.o2s.conn;
+package com.o2s.conn.ex;
 
 public class NonZeroExitStatusException extends Exception {
     

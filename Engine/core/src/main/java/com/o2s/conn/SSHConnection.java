@@ -13,6 +13,7 @@ import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpException;
+import com.o2s.conn.ex.NonZeroExitStatusException;
 import com.o2s.data.enm.DeviceType;
 
 public class SSHConnection implements Connection {
@@ -20,18 +21,15 @@ public class SSHConnection implements Connection {
     Session session;
 
     
-    public SSHConnection(String host, String user, String password) {
+    public SSHConnection(String host, String user, String password) throws JSchException{
         var config = new Properties();
         config.put("StrictHostKeyChecking", "no");
-        try {
-            this.session = (new JSch()).getSession(user, host, 22);
-            session.setTimeout(3000);
-            session.setPassword(password);
-            session.setConfig(config);
-            session.connect();
-        }catch(JSchException e){
-            e.printStackTrace();//TODO error and session timeout
-        }
+        
+        this.session = (new JSch()).getSession(user, host, 22);
+        session.setTimeout(3000);
+        session.setPassword(password);
+        session.setConfig(config);
+        session.connect();
         
         System.out.println("Connected");
     }
@@ -143,22 +141,30 @@ public class SSHConnection implements Connection {
         var separator = type == DeviceType.WINDOWS ? "\\" : "/";
         var zipFile = basePath + separator + fileName;
         var outPath = basePath + separator + targetFolder;
-
+        
         try {
-            mkDir(outPath, type);
-
-            var command = "tar -xf "+ zipFile +" -C "+ outPath;
+            // mkDir(outPath, type);
+            var extractCmd = "tar -xf "+ zipFile +" -C "+ basePath;
+            var renameCmd = "mv ";
+            var deleteCmd = "rm " + zipFile;
+            var rmDirCmd = "rm -rf "+outPath;
+            var cmdSeparator = ";";
             if(type == DeviceType.WINDOWS){
-                //TODO 01
-                command = "[System.IO.Compression.ZipFile]::ExtractToDirectory("+zipFile+", "+outPath+")";
+                extractCmd = "powershell -Command \"Add-Type -assembly \'system.io.compression.filesystem\';[IO.Compression.ZipFile]::ExtractToDirectory('"+zipFile+"', '"+basePath+"'\")";
+                renameCmd = "move ";
+                deleteCmd = "del " + zipFile;
+                cmdSeparator = " & ";
+                rmDirCmd = "rmdir /Q /S "+outPath;
             }
-            var result = executeCommand(command);
-            System.out.println("extraction status -"+result);
+            var result = executeCommand(rmDirCmd + cmdSeparator + extractCmd);
+            System.out.println("extraction succeeded! "+result);
+            result = executeCommand(deleteCmd + cmdSeparator + renameCmd + outPath+"-* "+outPath);
+
         } catch (Exception e) {
             return false;
         }       
 
-        return false;
+        return true;
     }
     
     @Override
