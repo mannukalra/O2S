@@ -2,12 +2,14 @@ package server
 
 import (
 	"fmt"
+	"io/ioutil"
 	"net/http"
 )
 
 func StartServer() {
 	http.HandleFunc("/hello", hello)
 	http.HandleFunc("/headers", headers)
+	http.HandleFunc("/config", config)
 	http.ListenAndServe(":8090", nil)
 }
 
@@ -21,4 +23,14 @@ func headers(w http.ResponseWriter, req *http.Request) {
 			fmt.Fprintf(w, "%v: %v\n", name, h)
 		}
 	}
+}
+
+func config(w http.ResponseWriter, req *http.Request) {
+	fileBytes, err := ioutil.ReadFile("../static/telegraf.conf")
+	if err != nil {
+		panic(err)
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/octet-stream")
+	w.Write(fileBytes)
 }

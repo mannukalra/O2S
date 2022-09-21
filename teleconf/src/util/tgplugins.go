@@ -11,7 +11,7 @@ import (
 func InputPlugins() map[string]string {
 
 	inputs := make(map[string]string)
-	content, err := ioutil.ReadFile("../static/telegraf.conf")
+	content, err := ioutil.ReadFile("../static/telegraf-ref.conf")
 
 	if err != nil {
 		log.Fatal(err)

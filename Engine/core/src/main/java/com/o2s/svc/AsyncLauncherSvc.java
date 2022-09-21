@@ -50,6 +50,7 @@ public class AsyncLauncherSvc {
 
             conn.extractFile(device.getBasePath(), agentFileName, Consts.AGENT_TARGET_FOLDER, device.getType());
             done = true;
+            conn.copyFile(Consts.SCRIPT_PATH+"/"+Consts.getAgentUpdateScriptName(device.getType()), device.getBasePath(), device.getType());
         }catch(Exception e){
             done = false;
         }
