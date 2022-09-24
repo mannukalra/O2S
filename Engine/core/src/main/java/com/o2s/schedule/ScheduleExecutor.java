@@ -9,11 +9,13 @@ import com.o2s.conn.ConnectionFactory;
 import com.o2s.conn.ex.AuthFailException;
 import com.o2s.conn.ex.NonZeroExitStatusException;
 import com.o2s.data.dto.DeviceDto;
+import com.o2s.data.dto.Monitor;
 
 public class ScheduleExecutor implements Runnable {
     
-    public static Map<String, Set<String>> scheduledDevices = new HashMap<>();
-
+    public static Map<String, Set<Monitor>> scheduledDevices = new HashMap<>();
+    
+    private int counter;
     private DeviceDto device;
     
     public ScheduleExecutor(DeviceDto device){
@@ -21,14 +23,15 @@ public class ScheduleExecutor implements Runnable {
     }
 
     private void executeScripts() {
-        var scripts = scheduledDevices.get(device.getHost());
-        if(scripts != null && !scripts.isEmpty()){
+        var deployedMonitors = scheduledDevices.get(device.getHost());
+        if(deployedMonitors != null && !deployedMonitors.isEmpty()){
             try {
                 var connection = ConnectionFactory.createConnection(device);
                 var path = device.getBasePath()+"/";
                 
-                for(var script : scripts){
-                    connection.executeScript(path+script, device.getType(), null);
+                for(var monitor : deployedMonitors){
+                    if(counter % monitor.getInterval() == 0)
+                        connection.executeScript(path+(monitor.getId()), device.getType(), null);
                 }
             } catch (AuthFailException | NonZeroExitStatusException e) {
                 e.printStackTrace();
@@ -40,7 +43,10 @@ public class ScheduleExecutor implements Runnable {
     @Override
     public void run() {
         executeScripts();
-        System.out.println(new Date()+" Runnable Task with device "+device.getHost()
-          +" on thread "+Thread.currentThread().getName());
+        System.out.println(new Date()+" Runnable Task with device "+device.getHost() +" on thread "+Thread.currentThread().getName());
+
+        counter++;
+        if(counter == 10000)
+            counter = 0;
     }
 }

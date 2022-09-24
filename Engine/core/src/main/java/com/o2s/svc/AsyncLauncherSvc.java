@@ -18,6 +18,7 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.o2s.conn.ConnectionFactory;
 import com.o2s.data.dto.DeviceDto;
+import com.o2s.data.dto.Monitor;
 import com.o2s.schedule.ScheduleExecutor;
 import com.o2s.util.Consts;
 
@@ -61,7 +62,7 @@ public class AsyncLauncherSvc {
             var fileName = Consts.getAgentUpdateScriptName(device.getType());
             conn.copyFile(Consts.SCRIPT_PATH+"/"+fileName, device.getBasePath()+"/"+fileName, device, true);
             
-            scheduleDeviceExecutor(device, 1, Set.of(Consts.AGENT_UPDATE_SCRIPT));
+            scheduleDeviceExecutor(device, Set.of(new Monitor(Consts.AGENT_UPDATE_SCRIPT, "", 5)));
             done = true;
         }catch(Exception e){
             done = false;
@@ -75,10 +76,10 @@ public class AsyncLauncherSvc {
     public void scheduleExecutor(){}
 
 
-    public void scheduleDeviceExecutor(DeviceDto device, int delay, Set<String> scripts){
+    public void scheduleDeviceExecutor(DeviceDto device, Set<Monitor> scripts){
         ScheduleExecutor.scheduledDevices.put(device.getHost(), scripts);
         var threadPoolTaskScheduler = (ThreadPoolTaskScheduler)context.getBean("scheduledTaskExecutor");
-        threadPoolTaskScheduler.scheduleWithFixedDelay(new ScheduleExecutor(device), Duration.ofMinutes(delay));
+        threadPoolTaskScheduler.scheduleWithFixedDelay(new ScheduleExecutor(device), Duration.ofMinutes(1));
     }
 
 
