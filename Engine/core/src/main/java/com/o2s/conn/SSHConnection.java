@@ -1,9 +1,15 @@
 package com.o2s.conn;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Properties;
 
+import org.checkerframework.checker.units.qual.C;
 
 import com.google.common.io.CharStreams;
 import com.jcraft.jsch.Channel;
@@ -14,15 +20,19 @@ import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpException;
 import com.o2s.conn.ex.NonZeroExitStatusException;
+import com.o2s.data.dto.DeviceDto;
 import com.o2s.data.enm.DeviceType;
+import com.o2s.util.PropsUtil;
 
 public class SSHConnection implements Connection {
 
     Session session;
+    private String host;
 
     
     public SSHConnection(String host, String user, String password) throws JSchException{
         var config = new Properties();
+        this.host = host;
         config.put("StrictHostKeyChecking", "no");
         
         this.session = (new JSch()).getSession(user, host, 22);
@@ -32,6 +42,11 @@ public class SSHConnection implements Connection {
         session.connect();
         
         System.out.println("Connected");
+    }
+
+    @Override
+    public String getHost(){
+        return this.host;
     }
 
     @Override
@@ -73,13 +88,29 @@ public class SSHConnection implements Connection {
     }
 
     @Override
-    public void copyFile(String sourcePath, String targetPath, DeviceType type) {
+    public void copyFile(String sourcePath, String targetPath, DeviceDto device, boolean replaceProps) {
         
         var updatePermissions = true;
-        if(type == DeviceType.WINDOWS){
+        if(device.getType() == DeviceType.WINDOWS){
             updatePermissions = false;
             targetPath = "/"+(targetPath.replace("\\", "/"));
         }
+
+        File tempFile = null;
+        if(replaceProps){
+            try {
+                var content = Files.readString(Paths.get(sourcePath));
+                content = PropsUtil.replaceAllProps(content, device);
+                var tempPath = Files.createTempFile("temp", null);
+                Files.write(tempPath, content.getBytes(StandardCharsets.UTF_8));
+                tempFile = tempPath.toFile();
+                sourcePath = tempPath.toAbsolutePath().toString();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            
+        }
+
         ChannelSftp sftpChannel;
         try{
             sftpChannel = (ChannelSftp) session.openChannel("sftp");
@@ -91,18 +122,26 @@ public class SSHConnection implements Connection {
             
         }catch(JSchException | SftpException | NonZeroExitStatusException ex){
             ex.printStackTrace();//
+        }finally{
+            if (tempFile != null && tempFile.exists())
+                tempFile.deleteOnExit();
         }
     }
 
     @Override
-    public String executeScript(String path, DeviceType type) throws NonZeroExitStatusException{
+    public String executeScript(String path, DeviceType type, String extention) throws NonZeroExitStatusException{
         String result = null;
         var executeCmd = ". ";
+        var fileExtention = ".sh";
         if(type == DeviceType.WINDOWS){
             executeCmd = "powershell -File ";
             path = path.replace("/", "\\");
+            fileExtention = ".ps1";
         }
-        result = executeCommand(executeCmd + path);
+        if(extention != null)
+            fileExtention = extention;
+
+        result = executeCommand(executeCmd + path + fileExtention);
         return result;
     }
 

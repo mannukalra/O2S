@@ -1,6 +1,7 @@
 package com.o2s.data.dto;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -26,6 +27,6 @@ public class DeviceDto implements Serializable {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Integer envId;
     
-    private Map<String, String> props;
+    private Map<String, String> props = new HashMap<>();
        
 }

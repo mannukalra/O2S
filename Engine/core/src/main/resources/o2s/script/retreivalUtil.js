@@ -76,6 +76,7 @@ function validateBasePath(conn, device){
 
     if(basePath){
         device.setBasePath(basePath);
+        device.getProps().put("BASE_PATH", basePath);
     }else{
         print("Failed to setup/validate base path, refer logs for details");
     }
@@ -83,10 +84,10 @@ function validateBasePath(conn, device){
 
 function validateO2SAccess(conn, device, sourcePath, fileName){
     var targetFilePath = device.getBasePath()+"/"+fileName;
-    conn.copyFile(sourcePath+"/"+fileName, targetFilePath, device.getType());
+    conn.copyFile(sourcePath+"/"+fileName, targetFilePath, device, false);
     var result="";
     try{
-        result = conn.executeScript(targetFilePath, device.getType());
+        result = conn.executeScript(targetFilePath, device.getType(), "");
         print("result  >>>>>>>>>>> "+result);
     }catch(ex){print(ex.message);}
 

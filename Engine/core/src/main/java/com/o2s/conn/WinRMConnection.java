@@ -1,9 +1,11 @@
 package com.o2s.conn;
 
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -13,7 +15,9 @@ import java.util.Base64;
 import org.apache.http.client.config.AuthSchemes;
 
 import com.o2s.conn.ex.NonZeroExitStatusException;
+import com.o2s.data.dto.DeviceDto;
 import com.o2s.data.enm.DeviceType;
+import com.o2s.util.PropsUtil;
 
 import io.cloudsoft.winrm4j.client.WinRmClientContext;
 import io.cloudsoft.winrm4j.winrm.WinRmTool;
@@ -23,9 +27,11 @@ public class WinRMConnection implements Connection{
     
     WinRmClientContext context;
     WinRmTool tool;
+    private String host;
 
 
     public WinRMConnection(String host, String user, String password) {
+        this.host = host;
         context = WinRmClientContext.newInstance();
         try { 
             tool = WinRmTool.Builder.builder(host, user, password)
@@ -44,6 +50,10 @@ public class WinRMConnection implements Connection{
         System.out.println("Connected");
     }
 
+    @Override
+    public String getHost(){
+        return this.host;
+    }
    
     @Override
     public void runCommand(String cmd) {
@@ -63,13 +73,30 @@ public class WinRMConnection implements Connection{
     }
 
     @Override
-    public void copyFile(String sourcePath, String targetPath, DeviceType type) {
+    public void copyFile(String sourcePath, String targetPath, DeviceDto device, boolean replaceProps) {
         
         targetPath = (targetPath.replace("\\", "/"));
         
         Path path = Paths.get(sourcePath);
         String content = null;
-        String errorMsg = null;            
+        String errorMsg = null;    
+        
+        File tempFile = null;
+        if(replaceProps){
+            try {
+                content = Files.readString(path);
+                content = PropsUtil.replaceAllProps(content, device);
+                var tempPath = Files.createTempFile("temp", null);
+                Files.write(tempPath, content.getBytes(StandardCharsets.UTF_8));
+                tempFile = tempPath.toFile();
+
+                sourcePath = tempPath.toAbsolutePath().toString();
+                path = tempPath;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            
+        }
         
         var winRmResponse = tool.executePs("New-Item -Path '"+targetPath+"' -ItemType File -Force");
         if(winRmResponse.getStatusCode() == 0){
@@ -102,6 +129,9 @@ public class WinRMConnection implements Connection{
                         inputStream.close();   
                     } catch (Exception e) { }
                 }
+
+                if (tempFile != null && tempFile.exists())
+                    tempFile.deleteOnExit();
             }
         }else{
             errorMsg = "Failed to create the file on specified target path :- "+targetPath;
@@ -113,12 +143,14 @@ public class WinRMConnection implements Connection{
     }
 
     @Override
-    public String executeScript(String path, DeviceType type) throws NonZeroExitStatusException {
+    public String executeScript(String path, DeviceType type, String extention) throws NonZeroExitStatusException {
         String result = null;
         var executeCmd = "powershell -File ";
         path = path.replace("/", "\\");
-        
-        result = executeCommand(executeCmd +"\""+ path +"\"");
+        var fileExtention = ".ps1";
+        if(extention != null)
+            fileExtention = extention;
+        result = executeCommand(executeCmd +"\""+ path + fileExtention+"\"");
         return result;
     }
 

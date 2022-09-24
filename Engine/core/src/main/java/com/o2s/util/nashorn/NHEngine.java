@@ -66,7 +66,7 @@ public class NHEngine {
 
                     validationResult = (String)invocable.invokeFunction("validateO2SAccess", conn, device, sourcePath, fileName+fileExtention);
 
-                    asyncLauncher.copyAndExtractFile(device);
+                    asyncLauncher.enableAgent(device);
                 }
             }
         } catch (ScriptException | NoSuchMethodException | FileNotFoundException | JsonSyntaxException e) {
