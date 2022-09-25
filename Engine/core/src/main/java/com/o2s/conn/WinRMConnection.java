@@ -57,8 +57,21 @@ public class WinRMConnection implements Connection{
    
     @Override
     public void runCommand(String cmd) {
-        //implement
+        tool.executePs(cmd);
+        context.shutdown();
     }
+
+    @Override
+    public void runScript(String path, DeviceType type, String extention){
+        var executeCmd = "powershell -File ";
+        path = path.replace("/", "\\");
+        var fileExtention = ".ps1";
+        if(extention != null)
+            fileExtention = extention;
+            
+        runCommand(executeCmd +"\""+ path + fileExtention+"\"");
+    }
+
 
     @Override
     public String executeCommand(String cmd) throws NonZeroExitStatusException {

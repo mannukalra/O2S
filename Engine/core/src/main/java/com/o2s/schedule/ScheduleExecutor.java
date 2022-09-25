@@ -6,8 +6,6 @@ import java.util.Map;
 import java.util.Set;
 
 import com.o2s.conn.ConnectionFactory;
-import com.o2s.conn.ex.AuthFailException;
-import com.o2s.conn.ex.NonZeroExitStatusException;
 import com.o2s.data.dto.DeviceDto;
 import com.o2s.data.dto.Monitor;
 
@@ -31,9 +29,9 @@ public class ScheduleExecutor implements Runnable {
                 
                 for(var monitor : deployedMonitors){
                     if(counter % monitor.getInterval() == 0)
-                        connection.executeScript(path+(monitor.getId()), device.getType(), null);
+                        connection.runScript(path+(monitor.getId()), device.getType(), null);
                 }
-            } catch (AuthFailException | NonZeroExitStatusException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
            

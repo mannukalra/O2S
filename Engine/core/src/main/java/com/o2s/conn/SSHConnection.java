@@ -51,7 +51,36 @@ public class SSHConnection implements Connection {
 
     @Override
     public void runCommand(String cmd) {
-        //implement
+        Channel channel = null;
+        try {
+            if (session.isConnected()) {
+                channel = session.openChannel("exec");
+                ((ChannelExec) channel).setCommand(cmd);
+                channel.connect();
+            }
+        } catch (JSchException e) {
+            e.printStackTrace();
+        } finally {
+            if (channel != null) {
+                channel.disconnect();
+            }
+        }
+    }
+
+    
+    @Override
+    public void runScript(String path, DeviceType type, String extention){
+        var executeCmd = ". ";
+        var fileExtention = ".sh";
+        if(type == DeviceType.WINDOWS){
+            executeCmd = "powershell -File ";
+            path = path.replace("/", "\\");
+            fileExtention = ".ps1";
+        }
+        if(extention != null)
+            fileExtention = extention;
+
+        runCommand(executeCmd + path + fileExtention);
     }
 
     @Override

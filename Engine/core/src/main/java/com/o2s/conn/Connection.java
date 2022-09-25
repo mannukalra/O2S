@@ -14,6 +14,8 @@ public interface Connection extends AutoCloseable {
 
     void copyFile(String sourcePath, String targetPath, DeviceDto device, boolean replaceProps);
 
+    void runScript(String path, DeviceType type, String extention);
+
     String executeScript(String path, DeviceType type, String extention) throws NonZeroExitStatusException;
 
     boolean deleteFile(String path, DeviceType type);
