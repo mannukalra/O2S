@@ -11,7 +11,7 @@ add-type @"
 "@
 [System.Net.ServicePointManager]::CertificatePolicy = New-Object TrustAllCertsPolicy
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-Invoke-WebRequest -UseBasicParsing http://192.168.43.40:8090/config -OutFile %BASE_PATH%\telegraf\telegraf.conf
+Invoke-WebRequest -UseBasicParsing http://192.168.1.36:8090/config -OutFile %BASE_PATH%\telegraf\telegraf.conf
 
 
 $ErrorActionPreference = 'SilentlyContinue'

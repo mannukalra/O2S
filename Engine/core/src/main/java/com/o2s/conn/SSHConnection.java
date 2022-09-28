@@ -5,11 +5,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Properties;
-
-import org.checkerframework.checker.units.qual.C;
 
 import com.google.common.io.CharStreams;
 import com.jcraft.jsch.Channel;
@@ -70,24 +67,14 @@ public class SSHConnection implements Connection {
     
     @Override
     public void runScript(String path, DeviceType type, String extention){
-        var executeCmd = ". ";
-        var fileExtention = ".sh";
-        if(type == DeviceType.WINDOWS){
-            executeCmd = "powershell -File ";
-            path = path.replace("/", "\\");
-            fileExtention = ".ps1";
-        }
-        if(extention != null)
-            fileExtention = extention;
-
-        runCommand(executeCmd + path + fileExtention);
+        runCommand(getScriptCommand(path, type, extention));
     }
 
     @Override
     public String executeCommand(String cmd) throws NonZeroExitStatusException{
         String result = null;
         Channel channel = null;
-
+        
         try{
             if(session.isConnected()){
                 channel = session.openChannel("exec");
@@ -114,6 +101,13 @@ public class SSHConnection implements Connection {
             }
         }
         return result;
+    }
+
+    @Override
+    public String executeCommand(String cmd, boolean isShell) throws NonZeroExitStatusException{
+        if(isShell)
+            cmd = "powershell -Command "+cmd;
+        return executeCommand(cmd);
     }
 
     @Override
@@ -159,19 +153,7 @@ public class SSHConnection implements Connection {
 
     @Override
     public String executeScript(String path, DeviceType type, String extention) throws NonZeroExitStatusException{
-        String result = null;
-        var executeCmd = ". ";
-        var fileExtention = ".sh";
-        if(type == DeviceType.WINDOWS){
-            executeCmd = "powershell -File ";
-            path = path.replace("/", "\\");
-            fileExtention = ".ps1";
-        }
-        if(extention != null)
-            fileExtention = extention;
-
-        result = executeCommand(executeCmd + path + fileExtention);
-        return result;
+        return executeCommand(getScriptCommand(path, type, extention));
     }
 
     @Override

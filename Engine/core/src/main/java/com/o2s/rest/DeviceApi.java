@@ -1,6 +1,10 @@
 package com.o2s.rest;
 
 
+import java.util.Map;
+
+import javax.wsdl.Message;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -65,5 +69,28 @@ public class DeviceApi {
     public Mono<Integer> addDevice(@RequestBody DeviceDto deviceDto){
         var addedDeviceId = deviceSvc.addDevice(deviceDto);
         return Mono.just(addedDeviceId).log();
+    }
+
+    @PostMapping(path = "/shell")
+    public Mono<Response> addDevice(@RequestBody Map<String, String> cmdData){
+        var response = new Response("success", "", null);
+        String message = null;
+        try(var connection = ConnectionFactory.createConnection(cmdData.get("host"), 
+            cmdData.get("user"), cmdData.get("password"), cmdData.get("protocol"));){
+            if(connection != null){
+                message = connection.executeCommand(cmdData.get("command"), Boolean.valueOf(cmdData.get("isShell")));
+            }else{
+                // error while establishing connection
+            }
+        }catch(AuthFailException | NonZeroExitStatusException ex){
+            response.setStatus("error");
+            response.setMessage("Error while establishing connection, "+ex.getMessage());
+        }catch(Exception ex){
+            response.setStatus("error");
+            response.setMessage("Error while establishing connection, "+ex.getMessage());
+        }
+        if(message != null)
+            response.setMessage(message);
+        return Mono.just(response).log();
     }
 }

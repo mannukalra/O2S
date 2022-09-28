@@ -62,6 +62,7 @@ public class AsyncLauncherSvc {
             var fileName = Consts.getAgentUpdateScriptName(device.getType());
             conn.copyFile(Consts.SCRIPT_PATH+"/"+fileName, device.getBasePath()+"/"+fileName, device, true);
             
+            //move after save
             scheduleDeviceExecutor(device, Set.of(new Monitor(Consts.AGENT_UPDATE_SCRIPT, "", 5)));
             done = true;
         }catch(Exception e){

@@ -63,19 +63,25 @@ public class WinRMConnection implements Connection{
 
     @Override
     public void runScript(String path, DeviceType type, String extention){
-        var executeCmd = "powershell -File ";
-        path = path.replace("/", "\\");
-        var fileExtention = ".ps1";
-        if(extention != null)
-            fileExtention = extention;
-            
-        runCommand(executeCmd +"\""+ path + fileExtention+"\"");
+        runCommand(getScriptCommand(path, type, extention));
     }
 
 
     @Override
     public String executeCommand(String cmd) throws NonZeroExitStatusException {
         WinRmToolResponse winRmResponse = tool.executeCommand(cmd);
+        var result = winRmResponse.getStdOut().trim();
+        if(winRmResponse.getStatusCode() != 0){
+            throw new NonZeroExitStatusException("NonZeroExitStatus error: "+ winRmResponse.getStdErr());
+        }
+        context.shutdown();
+        // System.out.println("winRmResponse: code=" + winRmResponse.getStatusCode() + "; out=" + winRmResponse.getStdOut() + "; err=" + winRmResponse.getStdErr());
+        return result;
+    }
+
+    @Override
+    public String executeCommand(String cmd, boolean isShell) throws NonZeroExitStatusException {
+        WinRmToolResponse winRmResponse = isShell ? tool.executePs(cmd) : tool.executeCommand(cmd);
         var result = winRmResponse.getStdOut().trim();
         if(winRmResponse.getStatusCode() != 0){
             throw new NonZeroExitStatusException("NonZeroExitStatus error: "+ winRmResponse.getStdErr());
@@ -157,14 +163,7 @@ public class WinRMConnection implements Connection{
 
     @Override
     public String executeScript(String path, DeviceType type, String extention) throws NonZeroExitStatusException {
-        String result = null;
-        var executeCmd = "powershell -File ";
-        path = path.replace("/", "\\");
-        var fileExtention = ".ps1";
-        if(extention != null)
-            fileExtention = extention;
-        result = executeCommand(executeCmd +"\""+ path + fileExtention+"\"");
-        return result;
+        return executeCommand(getScriptCommand(path, type, extention));
     }
 
     @Override
@@ -216,7 +215,7 @@ public class WinRMConnection implements Connection{
             context.shutdown();
         }
     }
-    
+
     // public static void main(String[] args) {
     //     System.out.println(new WinRMConnection("WIN-5AQBA3PBPPH.mshome.net", "Administrator", "").executeCommand("[System.Environment]::OSVersion"));
     // }

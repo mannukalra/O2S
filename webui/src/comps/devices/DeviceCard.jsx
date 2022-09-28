@@ -13,6 +13,8 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import ShareIcon from '@mui/icons-material/Share';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
+import Terminal from '../cmd/Terminal';
+import { Button } from '@mui/material';
 
 const ExpandMore = styled((props) => {
   const { expand, ...other } = props;
@@ -28,50 +30,73 @@ const ExpandMore = styled((props) => {
 function DeviceCard(props) {
   const [expanded, setExpanded] = React.useState(false);
 
+  const [terminalOpen, setTerminalOpen] = React.useState(false);
+  const handleOpenTerminal = () => {
+    setTerminalOpen(true);
+  };
+  
+  const handleCloseTerminal = (event, reason) => {
+    if (reason && reason == "backdropClick"){
+      return;
+    }
+    setTerminalOpen(false);
+}
+
   const handleExpandClick = () => {
     setExpanded(!expanded);
   };
 
+  
+
   return (
-    <Card sx={{ marginTop: "5px" }} >
-      <CardHeader
-        avatar={
-          <Avatar sx={{ bgcolor: blue[500] }} aria-label="recipe">
-            D
-          </Avatar>
-        }
-        action={
-          <IconButton aria-label="settings">
-            {/* //TODO Edit option */}
-            <MoreVertIcon />
-          </IconButton>
-        }
-        title={props.device.host}
-        subheader={props.device.alias}
-      />
-      <CardContent>
-        <Typography variant="body2" color="text.secondary">
-          "Chart Placeholder!!"
-        </Typography>
-      </CardContent>
-      <CardActions disableSpacing>
-        <ExpandMore
-          expand={expanded}
-          onClick={handleExpandClick}
-          aria-expanded={expanded}
-          aria-label="show more"
-        >
-          <ExpandMoreIcon />
-        </ExpandMore>
-      </CardActions>
-      <Collapse in={expanded} timeout="auto" unmountOnExit>
+    <div>
+      <Card sx={{ marginTop: "5px" }} >
+        <CardHeader
+          avatar={
+            <Avatar sx={{ bgcolor: blue[500] }} aria-label="recipe">
+              D
+            </Avatar>
+          }
+          action={
+            <IconButton aria-label="settings">
+              {/* //TODO Edit option */}
+              <MoreVertIcon />
+            </IconButton>
+          }
+          title={props.device.host}
+          subheader={props.device.alias}
+        />
         <CardContent>
-          <Typography paragraph>
-            {props.device.user}
+          <Typography variant="body2" color="text.secondary">
+            "Chart Placeholder!!"
           </Typography>
+          <Button variant="outlined" onClick={handleOpenTerminal}>Terminal</Button>
         </CardContent>
-      </Collapse>
-    </Card>
+        <CardActions disableSpacing>
+          <ExpandMore
+            expand={expanded}
+            onClick={handleExpandClick}
+            aria-expanded={expanded}
+            aria-label="show more"
+          >
+            <ExpandMoreIcon />
+          </ExpandMore>
+        </CardActions>
+        <Collapse in={expanded} timeout="auto" unmountOnExit>
+          <CardContent>
+            <Typography paragraph>
+              {props.device.user}
+            </Typography>
+          </CardContent>
+        </Collapse>
+      </Card>
+      <Terminal
+        input=""
+        output=""
+        device={props.device}
+        open={terminalOpen}
+        handleClose={handleCloseTerminal}/>
+    </div>
   );
 }
 
