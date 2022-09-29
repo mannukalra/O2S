@@ -2,7 +2,7 @@ import { Button, Grid } from '@mui/material';
 import { useEffect, useState } from 'react';
 import DeviceCard from './DeviceCard';
 import AddDevice from './AddDeviceStpr';
-import Terminal from '../cmd/Terminal';
+import Terminal from '../cmd/TerminalWS';
 
 
 function deviceCards(devices, setTerminalDevice, handleOpenTerminal) {

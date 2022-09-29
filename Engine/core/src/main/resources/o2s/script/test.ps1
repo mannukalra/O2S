@@ -11,4 +11,4 @@ add-type @"
 "@
 [System.Net.ServicePointManager]::CertificatePolicy = New-Object TrustAllCertsPolicy
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-Invoke-WebRequest -UseBasicParsing https://192.168.1.36:8443/monitor/test/TESTHOST
+Invoke-WebRequest -UseBasicParsing https://172.29.32.1:8443/monitor/test/TESTHOST
