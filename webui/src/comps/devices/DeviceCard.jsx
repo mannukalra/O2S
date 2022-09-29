@@ -24,6 +24,7 @@ const ExpandMore = styled((props) => {
   }),
 }));
 
+
 function DeviceCard(props) {
   const [expanded, setExpanded] = React.useState(false);
 
@@ -51,14 +52,17 @@ function DeviceCard(props) {
               <MoreVertIcon />
             </IconButton>
           }
-          title={props.device.host}
+          title={
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <div>{props.device.host}</div>
+              <Button variant="text" onClick={handleOpenTerminal} sx={{textTransform: "none"}}>Shell</Button>
+            </div>}
           subheader={props.device.alias}
         />
         <CardContent>
           <Typography variant="body2" color="text.secondary">
             "Chart Placeholder!!"
           </Typography>
-          <Button variant="outlined" onClick={handleOpenTerminal}>Terminal</Button>
         </CardContent>
         <CardActions disableSpacing>
           <ExpandMore
