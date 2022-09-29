@@ -54,6 +54,12 @@ public class WinRMConnection implements Connection{
     public String getHost(){
         return this.host;
     }
+
+    @Override
+    public boolean isConnected(){
+        return this.context != null;
+    }
+
    
     @Override
     public void runCommand(String cmd) {
@@ -213,6 +219,7 @@ public class WinRMConnection implements Connection{
     public void close() throws Exception {
         if(context != null){
             context.shutdown();
+            context = null;
         }
     }
 

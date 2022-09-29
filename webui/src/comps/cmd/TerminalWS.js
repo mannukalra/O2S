@@ -14,7 +14,7 @@ function TerminalWS(props){
         status: "",
         message: ""
     })
-    const [cmdResult, setCmdResult] = useState("this will be result");
+    const [cmdResult, setCmdResult] = useState("");
 
     
     useEffect(() => {
@@ -31,7 +31,7 @@ function TerminalWS(props){
     const onConnected = () =>{
         setHostData({...hostData, "connected": true});
         stompClient.subscribe("/topic/allhosts", onMessageReceived)
-        hostJoin();
+        connectHost();
     }
 
     const onMessageReceived = (payload) =>{
@@ -49,14 +49,22 @@ function TerminalWS(props){
     }
 
     const onError = (err) =>{
-        // debugger;
         console.log(">>>>>>>>>>>>>>>>>>>"+err);
     }
 
-    const hostJoin=()=>{
+    const connectHost=()=>{
         var message = {
           host: hostData.host,
           status:"JOIN"
+        };
+        stompClient.send("/app/cmd", {}, JSON.stringify(message));
+    }
+
+    const disconnectHost=()=>{
+        props.closeTerminal();
+        var message = {
+          host: hostData.host,
+          status:"DISCONNECT"
         };
         stompClient.send("/app/cmd", {}, JSON.stringify(message));
     }
@@ -68,9 +76,12 @@ function TerminalWS(props){
 
     const sendCmd=(event)=>{
         if (event.key === "Enter" && stompClient) {
-          var chatMessage = {
+            let command = hostData.message;
+            if(command.endsWith("\n"))
+                command = command.substring(0, command.length - 1);
+            const chatMessage = {
             host: hostData.host,
-            message: hostData.message,
+            message: command,
             status:"MESSAGE"
           };
           console.log(chatMessage);
@@ -91,7 +102,7 @@ function TerminalWS(props){
 		>
 			<DialogTitle sx={{ color: "white", display: "flex", justifyContent: "space-between", paddingBottom: "inherit" }}>
 				<div>{"Shell "+props.device?.host}</div>
-				<IconButton sx={{ color: "white" }} onClick={props.closeTerminal}>
+				<IconButton sx={{ color: "white" }} onClick={disconnectHost}>
 					<CloseIcon />
 				</IconButton>
 			</DialogTitle>

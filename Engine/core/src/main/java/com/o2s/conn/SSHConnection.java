@@ -25,7 +25,6 @@ public class SSHConnection implements Connection {
 
     Session session;
     private String host;
-
     
     public SSHConnection(String host, String user, String password) throws JSchException{
         var config = new Properties();
@@ -44,6 +43,11 @@ public class SSHConnection implements Connection {
     @Override
     public String getHost(){
         return this.host;
+    }
+
+    @Override
+    public boolean isConnected(){
+        return this.session.isConnected();
     }
 
     @Override

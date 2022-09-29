@@ -8,6 +8,8 @@ import com.o2s.data.enm.DeviceType;
 public interface Connection extends AutoCloseable {
 
     String getHost();
+
+    boolean isConnected();
     
     void runCommand(String cmd);
 
