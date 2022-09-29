@@ -84,7 +84,7 @@ public class DeviceApi {
             }
         }catch(AuthFailException | NonZeroExitStatusException ex){
             response.setStatus("error");
-            response.setMessage("Error while establishing connection, "+ex.getMessage());
+            response.setMessage(ex.getMessage());
         }catch(Exception ex){
             response.setStatus("error");
             response.setMessage("Error while establishing connection, "+ex.getMessage());

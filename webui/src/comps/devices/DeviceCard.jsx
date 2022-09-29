@@ -9,11 +9,8 @@ import Avatar from '@mui/material/Avatar';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import { blue } from '@mui/material/colors';
-import FavoriteIcon from '@mui/icons-material/Favorite';
-import ShareIcon from '@mui/icons-material/Share';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import Terminal from '../cmd/Terminal';
 import { Button } from '@mui/material';
 
 const ExpandMore = styled((props) => {
@@ -30,23 +27,14 @@ const ExpandMore = styled((props) => {
 function DeviceCard(props) {
   const [expanded, setExpanded] = React.useState(false);
 
-  const [terminalOpen, setTerminalOpen] = React.useState(false);
-  const handleOpenTerminal = () => {
-    setTerminalOpen(true);
-  };
-  
-  const handleCloseTerminal = (event, reason) => {
-    if (reason && reason == "backdropClick"){
-      return;
-    }
-    setTerminalOpen(false);
-}
-
   const handleExpandClick = () => {
     setExpanded(!expanded);
   };
 
-  
+  const handleOpenTerminal = () => {
+    props.setTerminalDevice(props.device);
+    props.openTerminal();
+  };
 
   return (
     <div>
@@ -90,12 +78,6 @@ function DeviceCard(props) {
           </CardContent>
         </Collapse>
       </Card>
-      <Terminal
-        input=""
-        output=""
-        device={props.device}
-        open={terminalOpen}
-        handleClose={handleCloseTerminal}/>
     </div>
   );
 }
