@@ -37,6 +37,11 @@ function DeviceCard(props) {
     props.openTerminal();
   };
 
+  const handleOpenInsights = () => {
+    props.setSelectedDevice(props.device);
+    props.setSelectedPage("G");
+  };
+
   return (
     <div>
       <Card sx={{ marginTop: "5px" }} >
@@ -55,7 +60,10 @@ function DeviceCard(props) {
           title={
             <div style={{ display: "flex", justifyContent: "space-between" }}>
               <div>{props.device.host}</div>
-              <Button variant="text" onClick={handleOpenTerminal} sx={{textTransform: "none"}}>Shell</Button>
+              <div style={{ display: "flex", justifyContent: "space-between" }}>
+                <Button variant="text" onClick={handleOpenTerminal} sx={{textTransform: "none"}}>Shell</Button>
+                <Button variant="text" onClick={handleOpenInsights} sx={{textTransform: "none"}}>Insights</Button>
+              </div>
             </div>}
           subheader={props.device.alias}
         />

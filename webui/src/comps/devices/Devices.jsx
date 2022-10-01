@@ -5,13 +5,15 @@ import AddDevice from './AddDeviceStpr';
 import Terminal from '../cmd/TerminalWS';
 
 
-function deviceCards(devices, setTerminalDevice, handleOpenTerminal) {
+function deviceCards(devices, setTerminalDevice, handleOpenTerminal, setSelectedDevice, setSelectedPage) {
     return devices?.map((device, index) => (
         <Grid key={index} item xs={12}>
             <DeviceCard 
                 device={device}
                 setTerminalDevice={setTerminalDevice}
-                openTerminal={handleOpenTerminal} />
+                openTerminal={handleOpenTerminal} 
+                setSelectedDevice={setSelectedDevice}
+                setSelectedPage={setSelectedPage}/>
         </Grid>
     ));
 }
@@ -64,7 +66,7 @@ function Devices(props) {
     return (
         <div>
             <Grid container rowSpacing={1} >
-                {deviceCards(devices, setTerminalDevice, handleOpenTerminal)}
+                {deviceCards(devices, setTerminalDevice, handleOpenTerminal, props.setSelectedDevice, props.setSelectedPage)}
             </Grid>
             <br />
             <Button variant="outlined" onClick={handleOpenAddDevice}>Add Device</Button> 

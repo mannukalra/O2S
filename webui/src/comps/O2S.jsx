@@ -17,6 +17,7 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import HiveIcon from '@mui/icons-material/Hive';
 import SettingsIcon from '@mui/icons-material/Settings';
+import InsightsIcon from '@mui/icons-material/Insights';
 import { Alert, Button, Grid, Tooltip } from '@mui/material';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
@@ -29,10 +30,12 @@ import Logo from '../img/o2s-logo.png';
 import Envs from './envs/Envs';
 import Devices from './devices/Devices';
 import Settings  from './settings/Settings';
+import Grafana from './graf/Grafana';
 
 const drawerWidth = 280;
 const envsTxt = "Environments";
 const settingsTxt = "Settings";
+const insightsTxt = "Insights";
 const evnTypeIcons = {PROD: <MonitorHeartIcon />, QA: <IntegrationInstructionsIcon />, DEV: <LogoDevIcon />, OTHER: <LabelImportantIcon />};
 const evnStatusColors = {HEALTHY: "#4caf50", INFO: "#03a9f4", WARNING: "#ff9800", ERROR: "#ef5350"}; 
 const typeSortOrder = {"PROD": 1, "QA": 2, "DEV": 3, "OTHER": 4};
@@ -121,6 +124,7 @@ export default function O2S(props) {
     const [alert, setAlert] = React.useState({open: false, severity: "", message: ""});
     const [envDDOpen, setEnvDDOpen] = React.useState(false);
     const [selectedEnv, setSelectedEnv] = React.useState(null);
+    const [selectedDevice, setSelectedDevice] = React.useState(null);
     const [selectedPage, setSelectedPage] = React.useState("E");
 
     const handleDrawerOpen = () => {
@@ -147,6 +151,7 @@ export default function O2S(props) {
 
     const selectEnv = (e) => {
         setSelectedPage("E");
+        setSelectedDevice(null);
         if(e.type != "click"){
             setSelectedEnv(e);
         }else if(e.currentTarget.id){
@@ -162,11 +167,16 @@ export default function O2S(props) {
     const selectSettings = (e) => {
         setSelectedPage("S");
     };
+    const selectInsights = (e) => {
+        setSelectedPage("G");
+    };
 
     const getLabel = () => {
-        var label = "ssssssssssss";
-        if(selectedPage == 'S'){
-            label = "Settings"
+        var label = "Unknown";
+        if(selectedPage == 'G'){
+            label = "";
+        }else if(selectedPage == 'S'){
+            label = "Settings";
         }else if(selectedPage == 'E'){
             if(selectedEnv){
                 label = selectedEnv.name+ " devices";
@@ -229,6 +239,19 @@ export default function O2S(props) {
                         </Collapse>
                     </ListItem>
                     <Divider />
+                    <ListItem key={insightsTxt} disablePadding sx={{ display: 'block' }} onClick={selectInsights} >
+                        <ListItemButton sx={{ minHeight: 48, justifyContent: drawerOpen ? 'initial' : 'center', px: 2.5 }} >
+                            <ListItemIcon sx={{ minWidth: 0, mr: drawerOpen ? 2 : 'auto', justifyContent: 'center' }} >
+                                <Tooltip title={insightsTxt} placement="right-start">
+                                    <IconButton>
+                                        <InsightsIcon />
+                                    </IconButton>
+                                </Tooltip>
+                            </ListItemIcon>
+                            <ListItemText primary={insightsTxt} sx={{ opacity: drawerOpen ? 1 : 0 }} />
+                        </ListItemButton>
+                    </ListItem>
+                    <Divider />
                     <ListItem key={settingsTxt} disablePadding sx={{ display: 'block' }} onClick={selectSettings} >
                         <ListItemButton sx={{ minHeight: 48, justifyContent: drawerOpen ? 'initial' : 'center', px: 2.5 }} >
                             <ListItemIcon sx={{ minWidth: 0, mr: drawerOpen ? 2 : 'auto', justifyContent: 'center' }} >
@@ -256,9 +279,11 @@ export default function O2S(props) {
                     </Grid>
                 </Grid>
                 {
-                selectedPage == "S" ? <Settings />:
+                selectedPage == "S" ? <Settings /> :
+                selectedPage == "G" ? <Grafana host={selectedDevice?.host} /> :
                 selectedPage == "E" && selectedEnv ? 
-                    <Devices envId={selectedEnv.id} label={selectedEnv.name} openAlert={openAlert} /> : 
+                    <Devices envId={selectedEnv.id} label={selectedEnv.name} openAlert={openAlert} 
+                        setSelectedDevice={setSelectedDevice} setSelectedPage={setSelectedPage} /> : 
                     <Envs envs={props.envs} selectEnv={selectEnv} openAlert={openAlert}/>
                 }
                 
