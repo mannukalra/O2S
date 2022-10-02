@@ -2,13 +2,16 @@ import React from 'react';
 
 
 function Grafana(props) {
-    let url = 'http://localhost:3003?orgId=1&refresh=5s&from=1664587290672&to=1664608890672';
+    const millisNow = Date.now();
+    const window = 8;//hours
+    const nowMinusWindow = millisNow - (window * 3600000);
+    let url = 'http://localhost:3003?orgId=1&refresh=5s&from='+nowMinusWindow+'&to='+millisNow;
     if(props.host)
-        url = 'http://localhost:3003/d/'+props.host+'/'+props.host+'-insights?orgId=1&refresh=5s&from=1664587290672&to=1664608890672&kiosk=tv'
+        url = 'http://localhost:3003/d/'+props.host+'/'+props.host+'-insights?orgId=1&refresh=5s&from='+nowMinusWindow+'&to='+millisNow+'&kiosk=tv'
     return (
         <div>
             <iframe src={url}
-                frameBorder="0" style={{width: "95vw",  height: "92vh", margin: "-2rem", marginLeft: "-2.2rem"}}
+                frameBorder="0" style={{width: "-webkit-fill-available", height: "92vh", margin: "-1.5rem", marginTop: "-2rem", marginBottom: "-2rem"}}
                 allowFullScreen
             >
             </iframe>
