@@ -16,7 +16,7 @@ func main() {
 	tgplugins.InputPlugins()
 	// handlers.StartServer()
 
-	handlers.Main2()
+	handlers.GenerateConf()
 
 	client, err := gapi.New("http://localhost:3000/", gapi.Config{BasicAuth: url.UserPassword("admin", "admin")})
 	if err != nil {
