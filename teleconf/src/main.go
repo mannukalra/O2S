@@ -2,9 +2,9 @@ package main
 
 import (
 	// "fmt"
-	//server "teleconf/handlers"
 	"fmt"
 	"net/url"
+	handlers "teleconf/handlers"
 	tgplugins "teleconf/util"
 
 	gapi "github.com/grafana/grafana-api-golang-client"
@@ -14,8 +14,11 @@ func main() {
 
 	// fmt.Println(tgplugins.InputPlugins())
 	tgplugins.InputPlugins()
-	// server.StartServer()
-	client, err := gapi.New("http://localhost:3003/", gapi.Config{BasicAuth: url.UserPassword("admin", "admin")})
+	// handlers.StartServer()
+
+	handlers.Main2()
+
+	client, err := gapi.New("http://localhost:3000/", gapi.Config{BasicAuth: url.UserPassword("admin", "admin")})
 	if err != nil {
 		fmt.Printf("expected error to be nil; got: %s", err.Error())
 	}

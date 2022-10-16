@@ -1,4 +1,4 @@
-package main
+package handlers
 
 import (
 	"fmt"
@@ -19,7 +19,7 @@ type Conf struct {
 	Plugins []Plugin
 }
 
-func main2() {
+func Main2() {
 	plugin1 := Plugin{"gloabal", []Entry{Entry{"key1", "val1"}, Entry{"key2", 12}}}
 	plugin2 := Plugin{"inputs", []Entry{Entry{"key11", "val11"}, Entry{"key21", 121}}}
 	conf := []Plugin{plugin1, plugin2}
