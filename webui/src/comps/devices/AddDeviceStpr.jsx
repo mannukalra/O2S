@@ -6,7 +6,6 @@ import ConfigureDevice from './ConfigureDevice';
 
 
 //TODO Consts for env/device status
-const protocols = [ { value: 'SSH', label: 'SSH'}, { value: 'WINRM', label: 'WINRM'}];
 const steps = ['Retrieve', 'Configure'];
 
 

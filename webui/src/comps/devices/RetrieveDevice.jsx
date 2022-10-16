@@ -3,6 +3,7 @@ import React, { useEffect } from 'react';
 
 //TODO Consts for env/device status
 const protocols = [ { value: 'SSH', label: 'SSH'}, { value: 'WINRM', label: 'WINRM'}];
+const types = [ { value: 'Linux', label: 'Linux'}, { value: 'Windows', label: 'Windows'}];
 
 function AddDevice(props) {
     const [device, setDeviceLocal] = React.useState(props.device);
@@ -16,6 +17,9 @@ function AddDevice(props) {
                 break;
             case 'protocol':
                 setDeviceLocal({ ...device, protocol: value });
+                break;
+            case 'type':
+                setDeviceLocal({ ...device, type: value });
                 break;
             case 'user':
                 setDeviceLocal({ ...device, user: value });
@@ -40,6 +44,16 @@ function AddDevice(props) {
                 <tbody>
                     <tr>
                         <td><TextField id="outlined-host" label="Host" name="host" value={device.host} onChange={handleChange} required /></td>
+                        <td>
+                            <TextField id="outlined-type" label="Type" name="type" 
+                            value={device.type} onChange={handleChange} select required >
+                                {types.map((option) => (
+                                    <MenuItem key={option.value} value={option.value}>
+                                        {option.label}
+                                    </MenuItem>
+                                ))}
+                            </TextField>
+                        </td>
                         <td>
                             <TextField id="outlined-protocol" label="Protocol" name="protocol" 
                             value={device.protocol} onChange={handleChange} select required >
