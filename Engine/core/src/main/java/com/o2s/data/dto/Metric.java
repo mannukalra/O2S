@@ -1,17 +1,22 @@
 package com.o2s.data.dto;
 
+
+import java.util.ArrayList;
+import java.util.List;
 import lombok.Data;
 
 @Data
-public class Monitor {
+public class Metric {
     String id;
     String type;
+    List<String> fields;
     int interval;
 
-    public Monitor(String id, String type, int interval) {
+    public Metric(String id, String type, int interval) {
         this.id = id;
         this.type = type;
         this.interval = interval;
+        this.fields = new ArrayList<>();
     }
 
     @Override
@@ -22,7 +27,7 @@ public class Monitor {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        Monitor other = (Monitor) obj;
+        Metric other = (Metric) obj;
         if (id == null) {
             if (other.id != null)
                 return false;

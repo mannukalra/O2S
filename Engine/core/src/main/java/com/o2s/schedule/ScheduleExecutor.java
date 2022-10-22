@@ -7,11 +7,11 @@ import java.util.Set;
 
 import com.o2s.conn.ConnectionFactory;
 import com.o2s.data.dto.DeviceDto;
-import com.o2s.data.dto.Monitor;
+import com.o2s.data.dto.Metric;
 
 public class ScheduleExecutor implements Runnable {
     
-    public static Map<String, Set<Monitor>> scheduledDevices = new HashMap<>();
+    public static Map<String, Set<Metric>> scheduledDevices = new HashMap<>();
     
     private int counter;
     private DeviceDto device;
