@@ -1,2 +1,15 @@
-derby.log
-.vscode/launch.json
+*/target/
+target/
+
+# Intellij
+.idea
+*.ipr
+*.iml
+*iws
+
+# Qaurkus
+*.log
+
+# VSCode
+.vscode
+
