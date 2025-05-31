@@ -5,7 +5,7 @@ import { Dialog, DialogContent, DialogTitle, IconButton, InputBase } from "@mui/
 import CloseIcon from '@mui/icons-material/Close';
 
 
-const url = 'https://localhost:8443/ws/';
+const url = 'http://localhost:8443/ws/';
 var stompClient = null;
 
 function TerminalWS(props){

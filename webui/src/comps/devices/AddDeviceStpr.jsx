@@ -17,7 +17,7 @@ export default function AddDeviceStpr(props) {
     function saveDevice(event) {
         event.preventDefault();
         (async () => {
-            const rawResponse = await fetch('https://localhost:8443/device/device', {
+            const rawResponse = await fetch('http://localhost:8443/device/device', {
               method: 'POST',
               headers: {
                 'Accept': 'application/json',
@@ -37,7 +37,7 @@ export default function AddDeviceStpr(props) {
         event.preventDefault();
         setLoading(true);
         (async () => {
-            const rawResponse = await fetch('https://localhost:8443/device/retrieve', {
+            const rawResponse = await fetch('http://localhost:8443/device/retrieve', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',

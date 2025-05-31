@@ -6,7 +6,7 @@ import O2S from './comps/O2S';
 function App() {
 
   const [envs, setEnvs] = useState([]);
-  const url = 'https://localhost:8443/env/envs';
+  const url = 'http://localhost:8443/env/envs';
 
   
   useEffect(() => {
@@ -15,7 +15,7 @@ function App() {
         .then(response => response.json())
         .then(data => {
           setEnvs(data);
-          // console.log(data)
+          console.log(data)
         });
     }
     fetchEnvs();

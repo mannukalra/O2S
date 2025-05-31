@@ -55,7 +55,7 @@ function AddEnv(props) {
     function saveEnv(event) {
         event.preventDefault();
         (async () => {
-            const rawResponse = await fetch('https://localhost:8443/env/env', {
+            const rawResponse = await fetch('http://localhost:8443/env/env', {
               method: 'POST',
               headers: {
                 'Accept': 'application/json',

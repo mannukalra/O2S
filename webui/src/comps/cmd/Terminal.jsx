@@ -21,7 +21,7 @@ function Terminal(props){
 				isShell: props.device.type == "WINDOWS"
 			};
 			(async () => {
-				const rawResponse = await fetch('https://localhost:8443/device/shell', {
+				const rawResponse = await fetch('http://localhost:8443/device/shell', {
 				method: 'POST',
 				headers: {
 					'Accept': 'application/json',

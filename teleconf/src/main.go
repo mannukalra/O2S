@@ -14,7 +14,7 @@ func main() {
 
 	// fmt.Println(tgplugins.InputPlugins())
 	tgplugins.InputPlugins()
-	// handlers.StartServer()
+	handlers.StartServer()
 
 	handlers.GenerateConf()
 

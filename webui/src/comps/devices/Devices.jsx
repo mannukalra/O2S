@@ -25,7 +25,7 @@ function Devices(props) {
     const [terminalOpen, setTerminalOpen] = useState(false);
     const [terminalDevice, setTerminalDevice] = useState(null);
 
-    const url = "https://localhost:8443/device/devices/"+ props.envId;
+    const url = "http://localhost:8443/device/devices/"+ props.envId;
 
     
     useEffect(() => {

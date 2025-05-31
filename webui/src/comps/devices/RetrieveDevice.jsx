@@ -2,8 +2,8 @@ import { Box, MenuItem, TextField } from '@mui/material';
 import React, { useEffect } from 'react';
 
 //TODO Consts for env/device status
-const protocols = [ { value: 'SSH', label: 'SSH'}, { value: 'WINRM', label: 'WINRM'}];
-const types = [ { value: 'Linux', label: 'Linux'}, { value: 'Windows', label: 'Windows'}];
+const protocols = [ { value: 'SSH', label: 'SSH'}, { value: 'WINRM', label: 'WINRM'}, { value: 'HTTP', label: 'HTTP'}];
+const types = [ { value: 'LINUX', label: 'Linux'}, { value: 'WINDOWS', label: 'Windows'}];
 
 function AddDevice(props) {
     const [device, setDeviceLocal] = React.useState(props.device);
@@ -46,7 +46,7 @@ function AddDevice(props) {
                         <td><TextField id="outlined-host" label="Host" name="host" value={device.host} onChange={handleChange} required /></td>
                         <td>
                             <TextField id="outlined-type" label="Type" name="type" 
-                            value={device.type} onChange={handleChange} select required >
+                            value={device.type} onChange={handleChange} margin="normal" select required fullWidth >
                                 {types.map((option) => (
                                     <MenuItem key={option.value} value={option.value}>
                                         {option.label}
